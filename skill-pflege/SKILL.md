@@ -7,6 +7,8 @@ description: Wie ein Skill in diesem Repo sicher angelegt, geändert und für Cl
 
 Dieses Repo (`HannoRE/Skills` auf GitHub, alleinige Quelle — kein Gitea-Spiegel mehr) ist **öffentlich**. Beide Agenten — Claude und Hermes — lesen und schreiben dieselbe Skill-Liste, aber über unterschiedliche Mechanismen. Dieser Skill hält beide Seiten synchron.
 
+**Mandat:** Claude nutzt und passt die Skills hier eigenständig an. Wenn ein neuer wiederkehrender Bedarf auftaucht, legt Claude ohne Rückfrage einen neuen Skill an — solange der Redaktions-Check (unten) eingehalten wird und, falls relevant, der Zugriffsweg für Hermes mitgedacht/übersetzt wird. Bei strukturellen Änderungen (z. B. neue Mechanismen, neue externe Systeme einbinden) gilt weiterhin: Rücksprache mit Hanno.
+
 ## Vor jedem Push: Redaktions-Check
 
 Weil das Repo öffentlich ist, vor jedem Commit prüfen:
@@ -44,6 +46,7 @@ Der lokale Checkout liegt unter `/home/hermes/repos/Hanno/Skills`.
 
 ## Wie Claude selbst schreibend zugreift
 
-Claude Code (CLI-Sitzungen mit Bash-Zugriff) kann direkt per `git`/`gh` committen und pushen, sofern die Maschine einen eingeloggten `gh`-Account hat. Auf der Haupt-Claude-Maschine ist das aktuell ein breiter OAuth-Token (voller `repo`-Scope über alle Repos, nicht auf `HannoRE/Skills` beschränkt) — bewusst so belassen, da diese Maschine nur von Hanno per Chat gesteuert wird.
+Zwei Wege, je nach Oberfläche:
 
-claude.ai Web selbst kann Skills **nicht** editieren (nur lesend über den Marketplace-Sync) — Änderungen kommen ausschließlich über eine Claude-Code-Sitzung oder über Hermes.
+- **Claude Code (Bash-Sitzungen):** Entweder `git`/`gh` (Clone + Commit + Push, sofern die Maschine einen eingeloggten `gh`-Account hat) oder direkt über die GitHub-Contents-API (`gh api repos/HannoRE/Skills/contents/<pfad>`, GET für sha+Inhalt, PUT für Änderungen) — letzteres ohne lokalen Clone, nützlich weil das Scratchpad-Verzeichnis sitzungsgebunden ist und in einer neuen Session nicht mehr existiert. Auf der Haupt-Claude-Maschine läuft das über einen breiten OAuth-Token (voller `repo`-Scope über alle Repos) — bewusst so belassen, da diese Maschine nur von Hanno per Chat gesteuert wird.
+- **claude.ai Web:** Seit 2026-08-16 über den `github`-MCP-Server im LiteLLM-Gateway (`api.githubcopilot.com/mcp`, Bearer-Token = derselbe fine-grained PAT wie bei Hermes, beschränkt auf `HannoRE/Skills`), freigegeben für das "Public MCP Team". Damit kann Claude jetzt auch aus claude.ai Web heraus Dateien in diesem Repo lesen und schreiben, nicht mehr nur lesend über den Marketplace-Sync. Der Server-Zugriff gilt pro Session ab dem Zeitpunkt der Team-Freigabe — eine zum Zeitpunkt der Freigabe bereits laufende Session sieht die neuen Tools erst in einer neuen Session.
