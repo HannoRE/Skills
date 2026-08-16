@@ -1,6 +1,6 @@
 ---
 name: mail-umgang
-description: Stilistische Antwortmuster für Hanno-Mails. Hellmeier, Apaleo, Kirchenvorstand, persönliche Kontakte.
+description: Stilistische Antwortmuster für Hanno-Mails an Geschäftspartner, kirchliche Gremien und persönliche Kontakte.
 ---
 
 # Mail – Umgang
@@ -17,10 +17,9 @@ Hannos Mailstil ist eigen, förmlich, aber nicht steif. Der Agent liefert Notize
 
 ## Verschiedene Zielgruppen
 
-- Hellmeier / Strahl (Miesbach): Medientechnik, intern abstimmen, Pfarrer Erwin Sergel im Urlaub erwähnen, September-Termin möglich?
-- Apaleo (Thiago Lunardi): kurze, sachliche Antwort, von Hanno formuliert.
-- Kirchenvorstand: größerer Geldbetrag, vorlegen, Zeitfenster mit September.
-- Persönliche Kontakte (Martin, Lennart, Andrea): kurz, freundlich, ohne Code-Sprech.
+- Geschäftspartner/Dienstleister: intern abstimmen vor Antwort, kurze sachliche Antwort, von Hanno formuliert.
+- Kirchliche Gremien: bei größeren Geldbeträgen immer vorlegen, ausreichend Zeitfenster einplanen.
+- Persönliche Kontakte: kurz, freundlich, ohne Code-Sprech.
 
 ## Operative Schritte
 

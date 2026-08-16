@@ -5,16 +5,16 @@ description: SSH-Zugangslogik zu Hannos Heim-Infrastruktur. Marvin, Minsky, Merl
 
 # SSH – Gateway-Logik
 
-Hannos Heimserver liegen im privaten Netz (192.168.2.0/24). Direkter SSH-Zugriff von AI-Nodes ist nicht vorgesehen. Immer über Tailscale oder über die VPN-/Gateway-Hops, die der jeweilige Server erwartet.
+Hannos Heimserver liegen in einem privaten Netz. Direkter SSH-Zugriff von AI-Nodes ist nicht vorgesehen. Immer über Tailscale oder über die VPN-/Gateway-Hops, die der jeweilige Server erwartet.
 
 ## Server-Inventar
 
-- Marvin: Hauptserver, Docker, Graylog, Nextcloud, Authentik, Jumphost, 192.168.2.9
-- Minsky: GPU-Host (RTX 3090, RTX 5060 Ti), Outpost-Container, iLO-Warnung läuft
-- Merlin: Backup-Ziel, 14 TB, Wake-on-LAN für Borg (Di 01:00)
-- Bonfire: ESXi-Lab, 192.168.2.15, WoL
+- Marvin: Hauptserver, Docker, Graylog, Nextcloud, Authentik, Jumphost
+- Minsky: GPU-Host, Outpost-Container
+- Merlin: Backup-Ziel, Wake-on-LAN für Borg
+- Bonfire: ESXi-Lab, WoL
 - Archimedes: USV für Marvin
-- mercury (Oracle Cloud): A1-Flex, 2 OCPU/12 GB, Public 89.168.112.175, Private 10.0.0.136, AD-1/FD-1, gestoppt
+- mercury: Cloud-Gateway, aktuell gestoppt
 
 ## Empfehlungen
 
