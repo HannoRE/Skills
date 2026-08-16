@@ -1,0 +1,15 @@
+{
+  "name": "hanno-skills",
+  "owner": { "name": "HannoRE" },
+  "plugins": [
+    {
+      "name": "hanno-skills",
+      "source": { "source": "github", "repo": "HannoRE/Skills" },
+      "description": "Persönliche Skills: Tagebuch, Obsidian-Pflege, SSH-Gateway, Mail-Umgang",
+      "version": "1.0.0",
+      "author": { "name": "HannoRE" },
+      "strict": false,
+      "skills": "."
+    }
+  ]
+}
