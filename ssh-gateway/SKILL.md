@@ -28,3 +28,9 @@ Hannos Heimserver liegen in einem privaten Netz. Direkter SSH-Zugriff von AI-Nod
 - Niemals AI-Node direkt SSH in Heimnetz
 - Keys auf Gateway zentralisieren, nicht auf jedem Host
 - Bei Tests: Tailscale-Status prüfen, dann Marvin, dann Zielhost
+
+## Zugriffsweg (agentenabhängig)
+
+- Claude Code (Bash-Sitzungen): hat SSH-Zugriff, diese Regeln gelten direkt.
+- claude.ai Web: kein Bash, kein SSH — dieser Skill ist dort nicht ausführbar. Bei SSH-Bedarf aus Web-Sitzungen an Claude Code oder Hermes verweisen.
+- Hermes: hat Shell-Zugriff, diese Regeln gelten direkt.
