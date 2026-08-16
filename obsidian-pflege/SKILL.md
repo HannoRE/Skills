@@ -26,3 +26,10 @@ Vault-Wurzel: `Zuhause/Obsidian/`. Persönliche Notizen liegen in `Notizen.md`, 
 - Vor jedem Schreibvorgang die Zieldatei lesen, damit der aktuelle Stand bekannt ist.
 - Niemals vorhandene Inhalte überschreiben oder löschen.
 - Bei Aktualisierungen Patch statt Full-Write.
+
+## Zugriffsweg (agentenabhängig)
+
+Claude und Hermes arbeiten auf denselben Dateien, nur über unterschiedliche Schnittstellen:
+
+- Claude: über die Nextcloud-Notes-Tools (`nc_notes_*`). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
+- Hermes: direkter Dateizugriff auf den Obsidian-Vault-Pfad (`Zuhause/Obsidian/...`).

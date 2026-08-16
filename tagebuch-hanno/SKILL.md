@@ -27,3 +27,8 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
 - Vor jedem Schreibvorgang die Jahresdatei lesen, damit der aktuelle Stand bekannt ist.
 - Nur anhängen, niemals vorhandene Inhalte überschreiben oder löschen.
 - Falls die Jahresdatei fehlt, neu anlegen mit Header `# 2026` und kurzer Boilerplate.
+
+## Zugriffsweg (agentenabhängig)
+
+- Claude: Nextcloud-Notes-Kategorie „Tagebuch", Notiztitel = Jahr (z. B. „2026"). Allgemeine Zuordnung siehe `obsidian-pflege`.
+- Hermes: `Zuhause/Obsidian/Tagebuch/<jahr>.md` direkt.
