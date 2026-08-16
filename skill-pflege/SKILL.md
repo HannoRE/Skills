@@ -1,6 +1,6 @@
 ---
 name: skill-pflege
-description: Wie ein Skill in diesem Repo sicher angelegt, geändert und für Claude und Hermes wirksam gemacht wird. Verwenden bei jeder Änderung an einem Skill hier.
+description: Skills in diesem Repo sicher anlegen, ändern und pflegen.
 ---
 
 # Skill-Pflege
@@ -20,7 +20,7 @@ Weil das Repo öffentlich ist, vor jedem Commit prüfen:
 
 ## Neuen Skill anlegen
 
-1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description`; Body: kurze vollständige Sätze).
+1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
 2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-pflege` als Vorlage.
 3. Redaktions-Check (oben) durchführen.
 4. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
@@ -33,16 +33,23 @@ Nur bei strukturellen Änderungen (z. B. ein komplett neues, separates Plugin st
 
 ## Wie es bei Hermes ankommt
 
-Hermes hat Push-Zugriff auf das Repo (Fine-grained GitHub-Token, beschränkt auf `HannoRE/Skills`, Contents Read & Write, über `gh auth login` auf dem Hetzner-Server eingerichtet).
+**Wichtig — Namensverwirrung:** Es gibt zwei verschiedene Dinge, die "Hermes" heißen. Die kanonische Instanz ist der `nousresearch/hermes-agent`-Container im Docker-Stack `hermes` auf **Marvin** (`/opt/stacks/hermes/`). Der arbeitet aber (`terminal.backend: ssh`) auf einer separaten Maschine, dem Server mit SSH-Alias `hetzner` (User `hermes` dort) — das ist nur die Werkbank, nicht der native Skill-Speicher. Beide sind involviert, aus unterschiedlichen Gründen:
 
-Der lokale Checkout liegt unter `/home/hermes/repos/Hanno/Skills`.
+- **Marvin (`/opt/stacks/hermes/skills-repo`)** — Git-Checkout, per Docker-Volume in den Container gemountet (`/opt/data/external-skills/hanno-skills`), eingetragen in `config.yaml` unter `skills.external_dirs`. **Das ist der native Weg**: Hermes' eigene Tools (`skill_view`, `skill_manage`, `hermes skills list`) lesen/schreiben hier direkt. Bei Namensgleichheit mit einem selbst angelegten Skill in `~/.hermes/skills/` (nativer Bereich) gewinnt laut Hermes-Doku der native — deshalb dürfen für diese fünf Skills dort keine gleichnamigen Duplikate existieren (Stand 2026-08-16: bereinigt).
+- **Hetzner (`/home/hermes/repos/Hanno/Skills`)** — separater Checkout, erreichbar über Hermes' `terminal`-Tool (SSH-Backend). Nützlich für manuelle/Shell-Inspektion, aber **nicht** die Quelle für `skill_view`/`skill_manage`.
 
-**Sync-Strategie (Stand 2026-08-16):** Kein Sync bei jedem einzelnen Request — zu teuer. Stattdessen:
+Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (beschränkt auf `HannoRE/Skills`, Contents Read & Write).
 
-- **Eingehend (GitHub → Hermes):** systemd-User-Timer `skills-sync.timer` auf dem Hetzner-Server pullt alle 20 Minuten automatisch (`~/.config/systemd/user/skills-sync.{service,timer}`, Lingering aktiv, überlebt Reboots). Kein manueller Trigger nötig.
-- **Ausgehend (Hermes → GitHub):** Wenn Hermes selbst einen Skill ändert, direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten. Pull vor Push, damit ein zwischenzeitlicher fremder Push nicht zu einem simplen Fehlschlag führt.
+**Sync-Strategie (Stand 2026-08-16):** Kein Sync bei jedem einzelnen Request — zu teuer. Stattdessen auf **beiden** Maschinen ein systemd-User-Timer (Lingering aktiv, überlebt Reboots):
 
-**Offen (Stand 2026-08-16):** Die eigentliche Einbindung in Hermes' Skill-Hub (`openclaw skills install <pfad> --as <slug> --global`, kopierbasiert, kein Live-Symlink) ist noch nicht eingerichtet — bewusst zurückgestellt. Bis das steht, sind die Skills im lokalen Checkout vorhanden, aber nicht automatisch Teil von Hermes' aktivem Skill-Set. Vor dem Einrichten dieses Schritts: mit Hanno Rücksprache halten (openclaw-Interna sind nicht trivial, siehe Recherche vom 2026-08-16).
+- Marvin: `~/.config/systemd/user/hanno-skills-sync.{service,timer}`
+- Hetzner: `~/.config/systemd/user/skills-sync.{service,timer}`
+
+Beide pullen alle 20 Minuten automatisch (`git pull --ff-only origin main`). Wenn Hermes selbst einen Skill ändert (nativ auf Marvin, oder manuell über die Hetzner-Shell), direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten.
+
+**Beschreibungslänge:** Hermes' natives `skill_manage`-Tool validiert `description` auf ≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt (System-Prompt-Budget). Alle Skills hier halten sich daran, damit Hermes sie nativ bearbeiten kann, ohne auf die Validierung zu laufen.
+
+**Erledigt (2026-08-16):** `config.yaml` auf Marvin hatte zusätzlich einen fehlerhaften Wert `terminal.cwd: /home/ubuntu` (SSH-User ist aber `hermes`, Home `/home/hermes`) — live als Fehler in den Logs sichtbar, mitgefixt auf `/home/hermes`.
 
 ## Wie Claude selbst schreibend zugreift
 
