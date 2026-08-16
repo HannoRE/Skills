@@ -5,7 +5,7 @@ description: Wie ein Skill in diesem Repo sicher angelegt, geändert und für Cl
 
 # Skill-Pflege
 
-Dieses Repo (`HannoRE/Skills` auf GitHub, gespiegelt nach `Hanno/Skills` auf Gitea) ist **öffentlich**. Beide Agenten — Claude und Hermes — lesen und schreiben dieselbe Skill-Liste, aber über unterschiedliche Mechanismen. Dieser Skill hält beide Seiten synchron.
+Dieses Repo (`HannoRE/Skills` auf GitHub, alleinige Quelle — kein Gitea-Spiegel mehr) ist **öffentlich**. Beide Agenten — Claude und Hermes — lesen und schreiben dieselbe Skill-Liste, aber über unterschiedliche Mechanismen. Dieser Skill hält beide Seiten synchron.
 
 ## Vor jedem Push: Redaktions-Check
 
@@ -21,7 +21,7 @@ Weil das Repo öffentlich ist, vor jedem Commit prüfen:
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description`; Body: kurze vollständige Sätze).
 2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-pflege` als Vorlage.
 3. Redaktions-Check (oben) durchführen.
-4. Commit + Push (`git push origin main`, sowohl auf `github`-Remote als auch `origin`/Gitea-Remote, falls beide konfiguriert sind).
+4. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
 
 ## Wie es bei Claude ankommt
 
@@ -33,7 +33,12 @@ Nur bei strukturellen Änderungen (z. B. ein komplett neues, separates Plugin st
 
 Hermes hat Push-Zugriff auf das Repo (Fine-grained GitHub-Token, beschränkt auf `HannoRE/Skills`, Contents Read & Write, über `gh auth login` auf dem Hetzner-Server eingerichtet).
 
-Der lokale Checkout liegt unter `/home/hermes/repos/Hanno/Skills` und muss nach Änderungen per `git pull` aktualisiert werden.
+Der lokale Checkout liegt unter `/home/hermes/repos/Hanno/Skills`.
+
+**Sync-Strategie (Stand 2026-08-16):** Kein Sync bei jedem einzelnen Request — zu teuer. Stattdessen:
+
+- **Eingehend (GitHub → Hermes):** systemd-User-Timer `skills-sync.timer` auf dem Hetzner-Server pullt alle 20 Minuten automatisch (`~/.config/systemd/user/skills-sync.{service,timer}`, Lingering aktiv, überlebt Reboots). Kein manueller Trigger nötig.
+- **Ausgehend (Hermes → GitHub):** Wenn Hermes selbst einen Skill ändert, direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten. Pull vor Push, damit ein zwischenzeitlicher fremder Push nicht zu einem simplen Fehlschlag führt.
 
 **Offen (Stand 2026-08-16):** Die eigentliche Einbindung in Hermes' Skill-Hub (`openclaw skills install <pfad> --as <slug> --global`, kopierbasiert, kein Live-Symlink) ist noch nicht eingerichtet — bewusst zurückgestellt. Bis das steht, sind die Skills im lokalen Checkout vorhanden, aber nicht automatisch Teil von Hermes' aktivem Skill-Set. Vor dem Einrichten dieses Schritts: mit Hanno Rücksprache halten (openclaw-Interna sind nicht trivial, siehe Recherche vom 2026-08-16).
 
