@@ -1,6 +1,6 @@
 ---
 name: mail-umgang
-description: Stilistische Antwortmuster für Hanno-Mails an Geschäftspartner, kirchliche Gremien und persönliche Kontakte.
+description: Hanno-Mails stilistisch und sicher beantworten.
 ---
 
 # Mail – Umgang
