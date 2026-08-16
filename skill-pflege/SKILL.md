@@ -49,6 +49,8 @@ Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (be
 
 **Beschreibungslänge:** Hermes' natives `skill_manage`-Tool validiert `description` auf ≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt (System-Prompt-Budget). Alle Skills hier halten sich daran, damit Hermes sie nativ bearbeiten kann, ohne auf die Validierung zu laufen.
 
+**Bekannte Falle — `skill_manage` NICHT für diese fünf Skills nutzen (Stand 2026-08-16):** `skill_manage(action='delete', name=...)` meldet für diese externen Skills "success", löscht aber nichts — stattdessen können native Duplikate an zwei Orten neu entstehen: `/opt/data/skills/` im Marvin-Container UND `/home/hermes/.hermes/skills/` auf Hetzner (Zwei-Wege-Sync zwischen beiden, siehe `tools.environments.file_sync` in den Hermes-Logs). Mehrfach beobachtet: Löschung auf einer Seite hält nicht, wenn die andere Seite noch eine Kopie hat — beide Seiten müssen gleichzeitig bereinigt werden. Für die fünf Skills hier: Änderungen **ausschließlich** über direkte Datei-Edits im externen Pfad + `git push` vornehmen, nicht über `skill_manage create/delete/patch`. Falls `skill_manage` bei einem dieser Namen doch mal anspringt (z. B. weil ein Auto-Fix-Versuch reinrutscht), prüfen ob `/opt/data/skills/<name>` (Marvin) und `/home/hermes/.hermes/skills/<name>` (Hetzner) neu aufgetaucht sind, und beide löschen.
+
 **Erledigt (2026-08-16):** `config.yaml` auf Marvin hatte zusätzlich einen fehlerhaften Wert `terminal.cwd: /home/ubuntu` (SSH-User ist aber `hermes`, Home `/home/hermes`) — live als Fehler in den Logs sichtbar, mitgefixt auf `/home/hermes`.
 
 ## Wie Claude selbst schreibend zugreift
