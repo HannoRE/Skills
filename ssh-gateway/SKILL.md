@@ -1,6 +1,6 @@
 ---
 name: ssh-gateway
-description: SSH-Zugangslogik zu Hannos Heim-Infrastruktur. Marvin, Minsky, Merlin, Bonfire, mercury und der neue Gateway.
+description: SSH zu Hannos Heimserver: immer über Gateway, nie direkt.
 ---
 
 # SSH – Gateway-Logik
