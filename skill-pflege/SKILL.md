@@ -7,6 +7,8 @@ description: Skills in diesem Repo sicher anlegen, ändern und pflegen.
 
 Dieses Repo (`HannoRE/Skills` auf GitHub, alleinige Quelle — kein Gitea-Spiegel mehr) ist **öffentlich**. Beide Agenten — Claude und Hermes — lesen und schreiben dieselbe Skill-Liste, aber über unterschiedliche Mechanismen. Dieser Skill hält beide Seiten synchron.
 
+**Nur für geteilte Skills.** Beide Agenten dürfen zusätzlich eigene, rein agentenspezifische Skills in ihrem jeweiligen nativen Bereich behalten (z. B. Hermes' eigene devops/gaming/creative-Skills unter `~/.hermes/skills/`, oder Claude-spezifische Skills aus anderen Marketplaces) — die müssen nicht hierher. Hierher gehört nur, was beide potenziell brauchen oder verstehen können.
+
 **Mandat:** Claude nutzt und passt die Skills hier eigenständig an. Wenn ein neuer wiederkehrender Bedarf auftaucht, legt Claude ohne Rückfrage einen neuen Skill an — solange der Redaktions-Check (unten) eingehalten wird und, falls relevant, der Zugriffsweg für Hermes mitgedacht/übersetzt wird. Bei strukturellen Änderungen (z. B. neue Mechanismen, neue externe Systeme einbinden) gilt weiterhin: Rücksprache mit Hanno.
 
 ## Vor jedem Push: Redaktions-Check
@@ -36,16 +38,14 @@ Nur bei strukturellen Änderungen (z. B. ein komplett neues, separates Plugin st
 **Wichtig — Namensverwirrung:** Es gibt zwei verschiedene Dinge, die "Hermes" heißen. Die kanonische Instanz ist der `nousresearch/hermes-agent`-Container im Docker-Stack `hermes` auf **Marvin** (`/opt/stacks/hermes/`). Der arbeitet aber (`terminal.backend: ssh`) auf einer separaten Maschine, dem Server mit SSH-Alias `hetzner` (User `hermes` dort) — das ist nur die Werkbank, nicht der native Skill-Speicher. Beide sind involviert, aus unterschiedlichen Gründen:
 
 - **Marvin (`/opt/stacks/hermes/skills-repo`)** — Git-Checkout, per Docker-Volume in den Container gemountet (`/opt/data/external-skills/hanno-skills`), eingetragen in `config.yaml` unter `skills.external_dirs`. **Das ist der native Weg**: Hermes' eigene Tools (`skill_view`, `skill_manage`, `hermes skills list`) lesen/schreiben hier direkt. Bei Namensgleichheit mit einem selbst angelegten Skill in `~/.hermes/skills/` (nativer Bereich) gewinnt laut Hermes-Doku der native — deshalb dürfen für diese fünf Skills dort keine gleichnamigen Duplikate existieren (Stand 2026-08-16: bereinigt).
-- **Hetzner (`/home/hermes/repos/Hanno/Skills`)** — separater Checkout, erreichbar über Hermes' `terminal`-Tool (SSH-Backend). Nützlich für manuelle/Shell-Inspektion, aber **nicht** die Quelle für `skill_view`/`skill_manage`.
+- **Hetzner (`/home/hermes/repos/Hanno/Skills`)** — separater Checkout, erreichbar über Hermes' `terminal`-Tool (SSH-Backend). Nützlich für manuelle/Shell-Inspektion, aber **nicht** die Quelle für `skill_view`/`skill_manage`. Kein automatischer Sync (siehe unten) — Hermes pullt hier bei Bedarf manuell.
 
 Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (beschränkt auf `HannoRE/Skills`, Contents Read & Write).
 
-**Sync-Strategie (Stand 2026-08-16):** Kein Sync bei jedem einzelnen Request — zu teuer. Stattdessen auf **beiden** Maschinen ein systemd-User-Timer (Lingering aktiv, überlebt Reboots):
+**Sync-Strategie (Stand 2026-08-16):**
 
-- Marvin: `~/.config/systemd/user/hanno-skills-sync.{service,timer}`
-- Hetzner: `~/.config/systemd/user/skills-sync.{service,timer}`
-
-Beide pullen alle 20 Minuten automatisch (`git pull --ff-only origin main`). Wenn Hermes selbst einen Skill ändert (nativ auf Marvin, oder manuell über die Hetzner-Shell), direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten.
+- **Marvin (nativer Pfad, muss aktuell sein):** systemd-User-Timer `hanno-skills-sync.{service,timer}` pullt alle 20 Minuten automatisch (Lingering aktiv, überlebt Reboots). Wenn Hermes hier nativ einen Skill ändert, direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten.
+- **Hetzner (sekundär, nur bei Bedarf genutzt):** kein Timer mehr (entfernt am 2026-08-16 — zu teuer für einen selten genutzten Pfad). Vor jeder Nutzung dort erst `git pull --ff-only`, nach jeder Änderung `git push`.
 
 **Beschreibungslänge:** Hermes' natives `skill_manage`-Tool validiert `description` auf ≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt (System-Prompt-Budget). Alle Skills hier halten sich daran, damit Hermes sie nativ bearbeiten kann, ohne auf die Validierung zu laufen.
 
