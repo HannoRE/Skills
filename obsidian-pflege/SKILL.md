@@ -1,6 +1,6 @@
 ---
 name: obsidian-pflege
-description: Konventionen für Obsidian-Notizen, Notizen.md vs. Referenz/Themenordner, saubere Doku-Pflege.
+description: Obsidian-Notizkonventionen einhalten: Struktur, Stil.
 ---
 
 # Obsidian – Pflege
