@@ -1,6 +1,6 @@
 ---
 name: tagebuch-hanno
-description: Workflow für Hanno-mündliche Tagebucheinträge. Verwenden bei jeder Anfrage, persönliche Tagesnotizen in Obsidian zu führen oder zu überarbeiten.
+description: Hanno-mündliche Tagebucheinträge in Obsidian schreiben.
 ---
 
 # Tagebuch – Hanno
