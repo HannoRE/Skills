@@ -21,6 +21,7 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
 - Spracherkennungsfehler glätten, aber keine substantiellen Ergänzungen ausdenken.
 - Keine Fremd-Aussagen in den Mund legen, nur was Hanno tatsächlich gesagt hat.
 - Zeitliche Reihenfolge im Eintrag entspricht dem Tagesverlauf.
+- **Hannos Stil erhalten:** Formulierungen, Satzbau und Wortwahl aus dem Diktat möglichst beibehalten. Nur offensichtliche Tippfehler und Spracherkennungsartefakte korrigieren, nicht eigenmächtig „literarischer", „korrekter" oder flüssiger formulieren. Wenn Hanno einen Satz unvollständig lässt, nicht eigenmächtig ergänzen. Hannos Worte sind die Quelle der Wahrheit.
 
 ## Technische Regeln
 
