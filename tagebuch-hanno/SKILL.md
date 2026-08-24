@@ -11,7 +11,8 @@ Tagebuch wird in Jahresdateien geführt (`2026.md`, `2027.md` usw.) im Obsidian-
 
 1. Hanno diktiert mündlich oder stichpunktartig, was am Tag passiert ist.
 2. Agent formuliert: zusammenhängender, persönlicher Fließtext in Hanno-Sprache. Keine Stichpunkte, keine Literaturprosa.
-3. Sammelappend: Agent hängt alle fertigen Einträge in einem Schwung an die Jahresdatei, jeweils ein eigener `## YYYY-MM-DD`-Block.
+3. **Vor jedem Eintrag: Hermes gibt Hanno die ungesicherten / interpretationsbedürftigen Stellen mit Satz-Kontext (1-3 Zeilen drumherum) und fragt nach Klärung.** Hanno korrigiert die Stellen, dann erst wird der Eintrag geglättet und geschrieben.
+4. Sammelappend: Agent hängt alle fertigen Einträge in einem Schwung an die Jahresdatei, jeweils ein eigener `## YYYY-MM-DD`-Block.
 
 Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno die finalen Texte freigegeben hat. Nicht ohne Rückfrage vorformulieren oder schreiben.
 
