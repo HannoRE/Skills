@@ -58,6 +58,12 @@ Beobachtungs-Charakter:
 - **`summary`**: kurzer Titel, keine Issue-Nummern/Komponenten-Präfixe.
 - **`description`**: oft leer, sonst freie Notizen/Stichpunkte (auch
   mal ein kompletter E-Mail-Text oder Copy-Paste-Rohmaterial) — keine
-  feste Struktur, kein Issue-Link-Muster.
+  feste Struktur, kein Issue-Link-Muster. **Description darf ruhig lang
+  sein** — wer/wann/warum-Notizen reingehören, gerne vollständig. Nicht
+  aus falscher Sparsamkeit kürzen.
 - **kein `due_date`** — Tasks in dieser Liste sind i.d.R. offen ohne
-  festen Termin.
+  festen Termin. Wenn Hanno einen Termin nennt, gerne setzen, aber nie
+  ohne echten Anlass.
+- **Kein `priority` setzen.** Hanno pflegt Prioritäten selbständig in
+  Nextcloud; eine automatische Priorisierung trifft fast nie das, was
+  Hanno meint. Das Feld einfach weglassen.
