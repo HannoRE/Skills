@@ -27,6 +27,8 @@ Weil das Repo öffentlich ist, vor jedem Commit prüfen:
 3. Redaktions-Check (oben) durchführen.
 4. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
 
+**Patch-Tool-Falle bei deutscher Markdown:** Wenn du einen Skill (oder eine andere deutsche Markdown-Datei) per `patch` mit `old_string`/`new_string` editierst, müssen die deutschen Anführungszeichen (`„"`, U+201E/U+201C) im `old_string` **Byte für Byte** mit der Datei übereinstimmen. ASCII `"` matched nicht, auch wenn es „gleich aussieht". Bei Fehlschlag (`Could not find a match for old_string`): die Originalstelle mit `read_file` neu laden, das Unicode-Zeichen 1:1 aus der Datei kopieren, nicht aus dem Gedächtnis. Diese Falle gilt für jeden Skill, der deutsche Texte enthält, nicht nur für Tagebucheinträge.
+
 ## Wie es bei Claude ankommt
 
 Automatisch, kein Zusatzschritt: `.claude-plugin/marketplace.json` referenziert das gesamte Repo mit `"skills": "."`. Claude Code (`/plugin marketplace update`) und claude.ai (Customize → Plugins → Sync) scannen den Repo-Root nach `<name>/SKILL.md`-Verzeichnissen und finden neue Skills selbständig.
@@ -46,6 +48,7 @@ Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (be
 
 - **Marvin (nativer Pfad, muss aktuell sein):** systemd-User-Timer `hanno-skills-sync.{service,timer}` pullt alle 20 Minuten automatisch (Lingering aktiv, überlebt Reboots). Wenn Hermes hier nativ einen Skill ändert, direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten.
 - **Hetzner (sekundär, nur bei Bedarf genutzt):** kein Timer mehr (entfernt am 2026-08-16 — zu teuer für einen selten genutzten Pfad). Vor jeder Nutzung dort erst `git pull --ff-only`, nach jeder Änderung `git push`.
+- **Hetzner-AI-Node ist NICHT Marvin.** Wenn der Agent direkt auf Hetzner arbeitet (terminal-backend ssh, user=hermes), ist **nur** `/home/hermes/repos/Hanno/Skills/` der Repo-Checkout. Der in der Doku zuerst genannte Marvin-Pfad `/opt/data/external-skills/hanno-skills/` existiert hier nicht. Schneller Sanity-Check zu Beginn: `ls /home/hermes/repos/Hanno/Skills/<skill-name>/SKILL.md` — wenn das die Datei zeigt, ist alles normal und man kann direkt `git status && git pull --ff-only` machen. Wenn nicht: `find /home/hermes /home/shared -maxdepth 8 -type d -name "<skill-name>" 2>/dev/null` und erst dann die Repo-Wurzel identifizieren.
 
 **Beschreibungslänge:** Hermes' natives `skill_manage`-Tool validiert `description` auf ≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt (System-Prompt-Budget). Alle Skills hier halten sich daran, damit Hermes sie nativ bearbeiten kann, ohne auf die Validierung zu laufen.
 
