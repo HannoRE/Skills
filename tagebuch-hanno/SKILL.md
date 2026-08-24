@@ -26,6 +26,13 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
   - **Stil erhalten (NEIN zum Umschreiben):** Hanno hat eine eigene Art, Sätze zu bauen — elliptisch, mit Brüchen, mit Reihenfolge-Wechseln, mit kurzen Einschüben, mit Aussprache-Eigenheiten wie „Schwimmbäck" statt „Schwimmbecken", mit seinen Lieblings-Wortwahl-Kniffen. Das ist sein **genereller Stil**, den ich erhalte. Ich formuliere nicht „besser", nicht „flüssiger", nicht „literarischer", nicht „weil es so klingt". Was Hanno sagt und wie er es sagt, bleibt — die inhaltliche Aussage UND die persönliche Aussprache.
 
 - **Was ist was:** Ein typischer STT-Fehler ist ein Wort, das im Kontext offensichtlich etwas anderes meint (Bart/Bad, hirichlich/richtig, Loket). Ein Stil-Merkmal ist eine Wortwahl, die Hanno tatsächlich benutzt (Schwimmbäck, „nicht ziemlich wach", „in Richtung Kutenberg" statt „Kutná Hora"). Im Zweifel nicht anfassen — Hanno fragen oder stehen lassen.
+
+- **Bekannte STT-Aussetzer, die ohne Kontext nicht eindeutig reparierbar sind** (bei Hanno nachfragen oder stehen lassen):
+  - „um Lätt war / um Lätt gemacht" — wahrscheinlich „live" (Omelett-Station, Mann macht live), aber unsicher
+  - „nicht ziemlich wach" — möglicherweise „nicht besonders frisch", aber Hannos originaler Wortlaut bleibt erhalten
+  - „Schwimmbäck" — Aussprache-Eigenheit, **bleibt drin** (6+ Vorkommen in 2026.md), Hanno meint „Schwimmbecken"
+  - „Modell" statt „Modul" / „Trakt" — möglicherweise echtes Wort, kein STT-Aussetzer
+  - „in Richtung Kutenberg" — Hanno benutzt die deutsche Form für Kutná Hora konsequent, **bleibt drin** (Stil, kein STT)
 - **Nicht interpretieren.** Aussagen zu Örtlichkeiten (welcher Raum, welche Etage, welcher Ort), Gegenständen, Personen und Zeitpunkten unverändert aus dem Diktat übernehmen. Nicht eigenmächtig in andere Räume verschieben, nicht verallgemeinern, nicht „glatt" formulieren, nicht Ursachen/Zustände/Materialien/Farben/Folgen hinzudichten, die Hanno nicht genannt hat. Was Hanno nicht erwähnt, wird nicht eigenmächtig ergänzt — auch keine „offensichtlichen" Details. Beispiel: Sagt Hanno „die Fliesen hängen im Vorzimmer, wo ich schlafe, weil da früher ein Ofen stand", steht da weder „im Bad" noch „im Vorzimmer, wo wir schlafen", und es wird nicht „originale Fliesen von 1896" o. ä. hinzugefügt, wenn Hanno es nicht gesagt hat.
 
 ## Technische Regeln
