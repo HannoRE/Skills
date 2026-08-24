@@ -13,6 +13,7 @@ Vault-Wurzel: `Zuhause/Obsidian/`. Persönliche Notizen liegen in `Notizen.md`, 
 - Dauerhafte Referenzen gehören unter `Referenz/` oder in einen passenden thematischen Ordner (`Kultur/Bayreuth/`, `Server/`, `Apaleo/`).
 - Themenordner-Inhalte (zum Beispiel „Wagner Sitzplätze Bayreuth") immer in den passenden Themenordner, nicht in `Referenz/`.
 - Niemals Inhalte aus `Notizen.md` in `Referenz/` automatisch verschieben; Hanno entscheidet.
+- Brainstorming-Stände, Tagesdiskussionen oder Notizen, die den Stand eines Moments festhalten, gehören nicht in den Vault. Sie werden mit `YYMMDD <Begriff>.md` ins `Archiv/YYYY/` gelegt und nicht in Obsidian gepflegt. Begründung: nichts ewig Bestehendes, kein Tagebucheintrag, sondern eine Momentaufnahme, die archiviert wird. Beispiel: Vier App-Ideen für den Urlaub (Diskussion mit Papa, 20.08.2026) wurde als `Archiv/2026/260820 App Ideen für den Urlaub.md` abgelegt, nicht in `Obsidian/Projekte/`.
 
 ## Stil
 

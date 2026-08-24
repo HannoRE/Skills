@@ -21,6 +21,16 @@ Hannos Mailstil ist eigen, förmlich, aber nicht steif. Der Agent liefert Notize
 - Kirchliche Gremien: bei größeren Geldbeträgen immer vorlegen, ausreichend Zeitfenster einplanen.
 - Persönliche Kontakte: kurz, freundlich, ohne Code-Sprech.
 
+## Einladungen an Externe (Teams, Hobbygruppen, Veranstaltungen)
+
+- Persönlich anfangen: was Hanno selbst daran findet, dann erst die Sache.
+- Eine Sache pro Nachricht: nicht mehrere Argumente gleichzeitig, nicht das ganze Drumherum erklären.
+- Terminangabe in der Nachricht, nicht „bei Interesse mehr".
+- Höflicher Ton, aber kein Marketing-Sprech („Leidenschaft", „Wir suchen…", „Gemeinsam stark"). Hanno ist Teilnehmer, kein Veranstalter.
+- Bestätigungswege niedrigschwellig halten: „Sag Bescheid", nicht „Anmeldung über X".
+- Empfänger kennen üblicherweise den Kontext schon. Erklärung nicht länger als zwei Sätze.
+- Konkrete Beispiele für gelungene Einladungen liegen in `references/beispiele-einladungen.md`.
+
 ## Operative Schritte
 
 1. Mail validieren (SPF/DKIM/DMARC, interner M365-Header, vertrauter Anhang).
