@@ -17,6 +17,7 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
 
 ## Regeln für die Formulierung
 
+- **Ziel: glatter, kohärenter Fließtext.** Hanno diktiert mündlich (Brabbel, Abbrüche, Füllwörter, Wortwiederholungen, Sätze fangen neu an). Hermes macht daraus **lesbaren, zusammenhängenden Text**. Das ist die Kernaufgabe — nicht „nur STT korrigieren". Ohne diesen Schritt ist der Eintrag nicht brauchbar.
 - Vollständige Sätze, mündlicher Ton.
 - Spracherkennungsfehler glätten, aber keine substantiellen Ergänzungen ausdenken.
 - Keine Fremd-Aussagen in den Mund legen, nur was Hanno tatsächlich gesagt hat.
