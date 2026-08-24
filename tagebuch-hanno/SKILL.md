@@ -15,6 +15,12 @@ Tagebuch wird in Jahresdateien geführt (`2026.md`, `2027.md` usw.) im Obsidian-
 
 Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno die finalen Texte freigegeben hat. Nicht ohne Rückfrage vorformulieren oder schreiben.
 
+**Push-Pitfall:** Nach jeder Skill-Änderung (egal ob per `patch` + Edit oder neu geschrieben) muss `git push origin main` laufen — das lokale Repo zu `~/repos/Hanno/Skills/` ist **nicht** automatisch synchron mit `origin/main`. Verifikation: `git status` (sollte „up to date with 'origin/main'" zeigen) und/oder `git log origin/main..main` (sollte leer sein). Hanno hat schon zweimal nachfragen müssen, weil Commits lokal blieben.
+
+**Retro-Diktat-Pitfall:** Wenn Hanno rückwirkend für vergangene Tage diktiert (z.B. „am Freitag sind wir losgekommen, dann Sonntag Ankunft in Marienbad"), können bestehende `## YYYY-MM-DD`-Einträge am falschen Datum stehen (Seeadler-Eintrag war z.B. auf 22.08. datiert, gehört aber zu 23.08. der Anreise). Vor dem Anlegen: **immer erst alle bestehenden Header in der Datei scannen** (`grep '^## ' <datei>`) und Hanno kurz fragen, wenn ein Datum nicht zum Inhalt passt. Nichts eigenmächtig umdatieren.
+
+**Backup-Dropbox-Pitfall:** Wenn der `dbx`-Wrapper (`~/.local/bin/dbx`) plötzlich ohne Fehler-Output schweigt und nichts schreibt, ist der Access-Token abgelaufen (4h-Grenze). Der Wrapper refresht eigentlich automatisch, ABER wenn das Auto-Refresh versagt (z.B. weil das Skript `set -e` drin hat), gibt es stillschweigend ein leeres Ergebnis. **Workaround:** Erst manuell `dbx account` (zeigt Account-Daten, refresht dabei) oder `dbx get ...` einfach nochmal laufen lassen — der zweite Aufruf funktioniert dann. Langfristig ist der `dbx`-Wrapper im Repo `dotfiles/local/bin/dbx` oder ähnlich — wenn er crasht, siehe `references/dbx-wrapper-recipes.md`.
+
 ## Regeln für die Formulierung
 
 - **Ziel: glatter, kohärenter Fließtext.** Hanno diktiert mündlich (Brabbel, Abbrüche, Füllwörter, Wortwiederholungen, Sätze fangen neu an). Hermes macht daraus **lesbaren, zusammenhängenden Text**. Das ist die Kernaufgabe — nicht „nur STT korrigieren". Ohne diesen Schritt ist der Eintrag nicht brauchbar.
