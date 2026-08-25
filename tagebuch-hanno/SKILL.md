@@ -11,10 +11,12 @@ Tagebuch wird in Jahresdateien geführt (`2026.md`, `2027.md` usw.) im Obsidian-
 
 1. Hanno diktiert mündlich oder stichpunktartig, was am Tag passiert ist.
 2. Agent formuliert: zusammenhängender, persönlicher Fließtext in Hanno-Sprache. Keine Stichpunkte, keine Literaturprosa.
-3. **Vor jedem Eintrag: Hermes gibt Hanno die ungesicherten / interpretationsbedürftigen Stellen mit Satz-Kontext (1-3 Zeilen drumherum) und fragt nach Klärung.** Hanno korrigiert die Stellen, dann erst wird der Eintrag geglättet und geschrieben.
+3. **Vor jedem Eintrag: Hermes gibt Hanno die ungesicherten / interpretationsbedürftigen Stellen mit Satz-Kontext (1-3 Zeilen drumherum, was vor und nach der Stelle steht) und fragt nach Klärung.** Hanno korrigiert die Stellen, dann erst wird der Eintrag geglättet und geschrieben.
 4. Sammelappend: Agent hängt alle fertigen Einträge in einem Schwung an die Jahresdatei, jeweils ein eigener `## YYYY-MM-DD`-Block.
 
 Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno die finalen Texte freigegeben hat. Nicht ohne Rückfrage vorformulieren oder schreiben.
+
+**Glättung mit Stil-Erhalt:** Beim Schreiben wird der Diktat-Brabbel zu **lesbarem, kohärentem Fließtext** (Abbrüche zu Ende führen, Füllwörter moderat raus, Wortwiederholungen streichen, „und"-Satz-Anfänger glätten). Aber: Hannos persönlicher Stil bleibt erhalten — keine literarische Glättung, keine Fremd-Formulierungen, keine inhaltlichen Ergänzungen. Was Hanno inhaltlich gemeint hat, bleibt; was STT verhunzt hat, wird repariert.
 
 **Push-Pitfall:** Nach jeder Skill-Änderung (egal ob per `patch` + Edit oder neu geschrieben) muss `git push origin main` laufen — das lokale Repo zu `~/repos/Hanno/Skills/` ist **nicht** automatisch synchron mit `origin/main`. Verifikation: `git status` (sollte „up to date with 'origin/main'" zeigen) und/oder `git log origin/main..main` (sollte leer sein). Hanno hat schon zweimal nachfragen müssen, weil Commits lokal blieben.
 
@@ -42,6 +44,8 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
   - „Boglocket"/„Borg-Lock-Hit" → „Loket"/„Burg Loket"
   - „Bademantel" für „Badamangel"
   - „Kurhotel" für „Kuhhotel"
+  - „F&F"/„Faith & Fire" → nicht zu „Rise" verkürzen (z. B. Kalendereintrag am 13.09.) — STT-Aussetzer bei kurzen englischen Markennamen
+  - Eigennamen (Lennart, Apaleo, Bayreuth statt Beirut) — **niemals raten**, immer Hanno fragen oder verbatim mit Kontext-Marker lassen
 
 - **Normales Sauna-/Wellness-Brauchtum NICHT interpretieren:** Drei Durchläufe Sauna mit Kaltwasserbecken, römisches Bad, ruhige Atmosphäre — das ist Standard, einfach so hinschreiben ohne Kommentar oder Wertung. Kein „richtige Sauna" (das ist STT-Fehlinterpretation von „kirchlich"), keine Erklärung warum dreimal — Hanno weiß was er gemacht hat.
 - **Nicht interpretieren.** Aussagen zu Örtlichkeiten (welcher Raum, welche Etage, welcher Ort), Gegenständen, Personen und Zeitpunkten unverändert aus dem Diktat übernehmen. Nicht eigenmächtig in andere Räume verschieben, nicht verallgemeinern, nicht „glatt" formulieren, nicht Ursachen/Zustände/Materialien/Farben/Folgen hinzudichten, die Hanno nicht genannt hat. Was Hanno nicht erwähnt, wird nicht eigenmächtig ergänzt — auch keine „offensichtlichen" Details. Beispiel: Sagt Hanno „die Fliesen hängen im Vorzimmer, wo ich schlafe, weil da früher ein Ofen stand", steht da weder „im Bad" noch „im Vorzimmer, wo wir schlafen", und es wird nicht „originale Fliesen von 1896" o. ä. hinzugefügt, wenn Hanno es nicht gesagt hat.

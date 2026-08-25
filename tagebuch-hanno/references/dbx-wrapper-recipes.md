@@ -10,21 +10,21 @@ Der `dbx`-Wrapper (`~/.local/bin/dbx`) ist ein Auto-Refresh-Wrapper für `dbxcli
 
 ## Bekannte Bugs / Fixes
 
-### Bug 1: Stille Outputs, keine Schreibvorgänge (gefixt mit Commit, falls noch nicht gemergt)
+### Bug 1: Stille Outputs, keine Schreibvorgänge (✅ finaler Fix im Wrapper `/home/hermes/.local/bin/dbx`)
 
 **Symptom:** `dbx get …` und `dbx put …` geben **keinen Fehler** aus und schreiben/laden **nichts** — der Output ist einfach leer. Exit-Code 0 oder ohne klares Signal.
 
 **Ursache:** Der Wrapper hatte eine frühe Version mit `set -e` und einem fehlerhaften Refresh-Pfad. Wenn der Access-Token abläuft, schlägt `dbxcli` mit „expired_access_token" fehl, der Refresh-Path aber wird durch `set -e` vorzeitig abgebrochen, **bevor** er den eigentlichen Befehl nochmal probiert.
 
-**Workaround (sofort):**
-1. Manuell `dbx account` laufen lassen — das triggert beim ersten Aufruf den Refresh und gibt danach Account-Info zurück.
-2. Dann das eigentliche `dbx get ...` oder `dbx put ...` nochmal ausführen — funktioniert.
+**Finaler Fix (jetzt im Wrapper, August 2026):**
+- **KEIN `set -e`** im Wrapper — bewusste Trennung: Token-Read, Befehl, ggf. Refresh, Re-Run.
+- Access- und Refresh-Token werden in **lokale Shell-Variablen** geladen, dann `DBXCLI_ACCESS_TOKEN="..." dbxcli ...` aufgerufen.
+- `DBXCLI_OUTPUT` und `DBXCLI_EXIT` werden separat erfasst.
+- Wenn Exit≠0 UND Output enthält „401"/„invalid"/„expired"/„authentication" → Refresh triggern via `curl https://api.dropboxapi.com/oauth2/token` mit `grant_type=refresh_token`.
+- Nach Refresh: `credentials.json` per Python aktualisieren, **alle Felder erhalten** (`scope`, `uid`, `account_id`, `token_type` nicht überschreiben), nur `access_token`, ggf. `refresh_token`, und `last_refresh` neu schreiben.
+- Dann Befehl **nochmal** mit neuem Token ausführen.
 
-**Langfristig:** Wenn du den Wrapper neu schreibst oder patchst:
-- KEIN `set -e` im Wrapper
-- Refresh-Pfad triggert **immer**, nicht nur bei Auth-Error (proaktiver Refresh)
-- Bei JSON-Update `last_refresh` per `date -Iseconds` in UTC setzen
-- Alle Felder der `credentials.json` erhalten, nicht nur `access_token`/`refresh_token` überschreiben (sonst gehen `scope`, `uid`, `account_id`, `token_type` verloren)
+**Falls es doch einmal hakt:** Manuell `dbx account` laufen lassen — das triggert beim ersten Aufruf den Refresh und gibt danach Account-Info zurück. Dann das eigentliche `dbx get ...` oder `dbx put ...` nochmal ausführen — funktioniert.
 
 ### Bug 2: PKCE-Flow race condition (dbxcli-Pipe-Workaround)
 
