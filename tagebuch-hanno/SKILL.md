@@ -9,18 +9,32 @@ Tagebuch wird in Jahresdateien geführt (`2026.md`, `2027.md` usw.) im Obsidian-
 
 ## Standard-Workflow
 
+**Strenge Reihenfolge einhalten — Hanno hat das in der Praxis mehrfach explizit so eingefordert:**
+
 1. Hanno diktiert mündlich oder stichpunktartig, was am Tag passiert ist.
-2. Agent formuliert: zusammenhängender, persönlicher Fließtext in Hanno-Sprache. Keine Stichpunkte, keine Literaturprosa.
-3. **Vor jedem Eintrag: Hermes gibt Hanno die ungesicherten / interpretationsbedürftigen Stellen mit Satz-Kontext (1-3 Zeilen drumherum, was vor und nach der Stelle steht) und fragt nach Klärung.** Hanno korrigiert die Stellen, dann erst wird der Eintrag geglättet und geschrieben.
-4. Sammelappend: Agent hängt alle fertigen Einträge in einem Schwung an die Jahresdatei, jeweils ein eigener `## YYYY-MM-DD`-Block.
+2. **Hermes liest die Jahresdatei**, prüft, ob `## YYYY-MM-DD` schon existiert (siehe „Retro-/Erweitern-Pitfall" unten), und scannt das Diktat auf interpretationsbedürftige Stellen.
+3. **Hermes gibt Hanno alle ungesicherten / interpretationsbedürftigen Stellen mit Satz-Kontext** (1–3 Zeilen drumherum, was vor und nach der Stelle steht) **und fragt nach Klärung**. Pro Stelle: was im Diktat steht + meine beste Vermutung (falls vorhanden) + „Bitte klären oder stehen lassen".
+4. Hanno korrigiert die Stellen — direkt im Chat, kurze Bestätigung pro Punkt reicht.
+5. **Erst dann** schreibt Hermes den Eintrag: zusammenhängender, persönlicher Fließtext in Hanno-Sprache. Keine Stichpunkte, keine Literaturprosa, aber **kohärent geglättet** (Abbrüche zu Ende führen, Füllwörter moderat raus, Wortwiederholungen streichen, „und"-Satz-Anfänger glätten).
+6. Sammelappend: Agent hängt alle fertigen Einträge in einem Schwung an die Jahresdatei, jeweils ein eigener `## YYYY-MM-DD`-Block. Bei bereits existierendem Block siehe „Retro-/Erweitern-Pitfall".
 
-Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno die finalen Texte freigegeben hat. Nicht ohne Rückfrage vorformulieren oder schreiben.
+Wichtig: **Schritt 5 (Schreiben + Glätten) erfolgt strikt NACH Schritt 4 (Korrekturen)**. Niemals vorformulieren und dann um Korrektur bitten. Hanno hat explizit klargestellt: „Vor Eintrag: Kontext zeigen, Hanno korrigiert, DANN Eintrag schreiben + glätten."
 
-**Glättung mit Stil-Erhalt:** Beim Schreiben wird der Diktat-Brabbel zu **lesbarem, kohärentem Fließtext** (Abbrüche zu Ende führen, Füllwörter moderat raus, Wortwiederholungen streichen, „und"-Satz-Anfänger glätten). Aber: Hannos persönlicher Stil bleibt erhalten — keine literarische Glättung, keine Fremd-Formulierungen, keine inhaltlichen Ergänzungen. Was Hanno inhaltlich gemeint hat, bleibt; was STT verhunzt hat, wird repariert.
+**Stil-Erhalt beim Glätten:** Hanno brabbelt beim Diktieren — der Eintrag wird **kohärent**, aber **nicht literarisch glatt**. Persönlicher Sprachstil, Wortwahl, deutsche Ortsnamen-Formen (z. B. „Kutenberg" statt „Kutná Hora"), originäre Wendungen bleiben erhalten. Hanno hat das so formuliert: „Nur vielleicht kann man Teilweise meinen Stil erhalten" — d. h. nicht jeder Original-Satz bleibt 1:1, aber Stil-Eigenheiten (Lieblingswörter, Sprachmelodie, leichte Umständlichkeit) gehen nicht verloren.
+
+Niemals Einträge versenden, ergänzen oder verschicken, bevor Hanno die finalen Texte freigegeben hat.
 
 **Push-Pitfall:** Nach jeder Skill-Änderung (egal ob per `patch` + Edit oder neu geschrieben) muss `git push origin main` laufen — das lokale Repo zu `~/repos/Hanno/Skills/` ist **nicht** automatisch synchron mit `origin/main`. Verifikation: `git status` (sollte „up to date with 'origin/main'" zeigen) und/oder `git log origin/main..main` (sollte leer sein). Hanno hat schon zweimal nachfragen müssen, weil Commits lokal blieben.
 
-**Retro-Diktat-Pitfall:** Wenn Hanno rückwirkend für vergangene Tage diktiert (z.B. „am Freitag sind wir losgekommen, dann Sonntag Ankunft in Marienbad"), können bestehende `## YYYY-MM-DD`-Einträge am falschen Datum stehen (Seeadler-Eintrag war z.B. auf 22.08. datiert, gehört aber zu 23.08. der Anreise). Vor dem Anlegen: **immer erst alle bestehenden Header in der Datei scannen** (`grep '^## ' <datei>`) und Hanno kurz fragen, wenn ein Datum nicht zum Inhalt passt. Nichts eigenmächtig umdatieren.
+**Retro-/Erweitern-Pitfall:** Wenn Hanno rückwirkend für vergangene Tage diktiert (z. B. „am Freitag sind wir losgekommen, dann Sonntag Ankunft in Marienbad“), können bestehende `## YYYY-MM-DD`-Einträge am falschen Datum stehen (Seeadler-Eintrag war z. B. auf 22.08. datiert, gehört aber zu 23.08. der Anreise). Vor dem Anlegen: **immer erst alle bestehenden Header in der Datei scannen** (`grep '^## ' <datei>`) und Hanno kurz fragen, wenn ein Datum nicht zum Inhalt passt. Nichts eigenmächtig umdatieren.
+
+**Erweitern vs. neuer Eintrag:** Wenn der Tag, für den Hanno diktiert, **bereits einen Eintrag** in der Jahresdatei hat (auch wenn er nur aus einem Satz oder einer Notiz besteht), liegt ein **Erweitern-Fall** vor — kein komplett neuer Eintrag. Vorgehen:
+1. **Bestehenden Inhalt des Tagesblocks komplett lesen**, Hanno kurz zeigen, was schon drinsteht.
+2. Hanno entscheidet: ist das neue Diktat eine **Ergänzung** zum bestehenden Eintrag, oder **ersetzt/überschreibt** es ihn?
+3. Bei Ergänzung: bestehender Text + neuer Text werden im Workflow zu **einem** Eintrag verschmolzen, dann geglättet — nicht zwei Blöcke unter dem gleichen Datum.
+4. Bei Ersetzung: vor dem Überschreiben den alten Inhalt 1:1 zitieren und explizit fragen, ob er weg kann. Nichts eigenmächtig löschen.
+
+Beispiel aus der Praxis (25.08.2026): Der 24.08.-Eintrag existierte bereits mit Sauna-Detail; Hanno diktierte zwei Tage später rückwirkend den ganzen Reiseanfang. Statt einen neuen 24.08.-Block zu schreiben, wurde der bestehende erweitert.
 
 **Backup-Dropbox-Pitfall:** Wenn der `dbx`-Wrapper (`~/.local/bin/dbx`) plötzlich ohne Fehler-Output schweigt und nichts schreibt, ist der Access-Token abgelaufen (4h-Grenze). Der Wrapper refresht eigentlich automatisch, ABER wenn das Auto-Refresh versagt (z.B. weil das Skript `set -e` drin hat), gibt es stillschweigend ein leeres Ergebnis. **Workaround:** Erst manuell `dbx account` (zeigt Account-Daten, refresht dabei) oder `dbx get ...` einfach nochmal laufen lassen — der zweite Aufruf funktioniert dann. Langfristig ist der `dbx`-Wrapper im Repo `dotfiles/local/bin/dbx` oder ähnlich — wenn er crasht, siehe `references/dbx-wrapper-recipes.md`.
 
@@ -36,6 +50,16 @@ Wichtig: Niemals Einträge versenden, ergänzen oder verschieben, bevor Hanno di
   - **Stil erhalten (generell) — ABER kohärenter Text:** Hannos persönlicher Sprachstil (Wortwahl, deutsche Ortsnamen-Formen wie „Kutenberg" statt „Kutná Hora", originäre Wendungen) bleibt erhalten — aber der Eintrag wird **deutlich geglättet**. Hanno brabbelt beim Diktieren (Abbrüche, Füllwörter, Sätze fangen neu an, „und" als Satz-Anfänger, Wortwiederholungen, unvollständige Sätze). Hermes macht daraus **kohärenten Text** mit klarem Satzbau, ohne Hannos Stimme zu verlieren: abgebrochene Sätze werden zu Ende geführt, Füllwörter moderat raus, Wortwiederholungen gestrichen. Aber: keine fremden Formulierungen, keine literarische Glättung, keine inhaltliche Ergänzung. Was Hanno inhaltlich gemeint hat, bleibt unangetastet. Was STT verhunzt hat, wird repariert.
 
 - **Verbatim-Auslieferung mit Kontext-Hinweisen.** Nach jedem Transkript/Upload eines Eintrags immer kurz die Stellen markieren, die interpretationsbedürftig oder ungesichert sind — mit bis zu 3 Zeilen Kontext drumherum (was vor und nach der Stelle steht) — damit Hanno sie beim Gegenlesen direkt korrigieren kann. Nicht raten, was Hanno gemeint hat; stattdessen die Roh-Stelle sichtbar lassen oder als „Vermutung X / Alternative Y" markieren.
+
+**Pre-Push-Quality-Gate (verbindlich vor jedem `dbx put`).** Vor jedem Upload eines Eintrags die folgenden fünf Checks explizit durchgehen — wenn auch nur einer danebengeht, nicht pushen, sondern Hanno die Stelle(n) als Kontext-Liste vorlegen:
+
+1. **STT-Reste-Scan:** Alle bekannten STT-Aussetzer (siehe unten) entfernt? Speziell: „Modell aus", „Badamangel", „Kuhhotel", „Schwimmbäck", „um Lätt", „nicht ziemlich wach", „Borg-Lock-Hit", Eigennamen mit Phantasiebuchstaben.
+2. **Abrupte-Abbrüche-Scan:** Kein Satz endet mitten im Gedanken („haben erst mal in Loket gehalten." → womit? warum? was kam dann?). Entweder Satz sinnvoll zu Ende führen (mit was aus dem Kontext logisch folgt) ODER ehrlichen `[…] folgt`-Marker setzen. Niemals halbe Sätze stehen lassen.
+3. **Ankündigungs-Scan:** Wurde im Eintrag etwas angekündigt (z.B. „haben in Loket gehalten", „am Nachmittag gingen wir dann ..."), aber dann nicht ausgeführt? Ankündigungen einlösen oder den Satz umformulieren, sodass nichts offen bleibt. Wenn Hanno über ein Event / einen Ort geredet hat, MUSS er im Eintrag auftauchen — entweder beschrieben oder mit ehrlichem „[Loket: folgt]"-Marker.
+4. **Sinn-Schnitzer-Scan:** Kein Quatsch wie „in einer schönen Höhe gebaut" (gemeint war wahrscheinlich Hang-Lage), „dem Prinzip halbes Krankenhaus" (ohne Artikel), „im Prinzip schon mal abgelaufen" (zweideutig). Solche Stellen vor dem Push umformulieren oder Hanno fragen.
+5. **Eigenname-Scan:** Bei Stadt-/Ortsnamen, die Hanno deutsch ausspricht („Kutenberg", „Karlsbad", „Mariebad"), ist die tschechische Originalform **nicht** eindeutig aus dem STT rekonstruierbar. **Nicht eigenmächtig auf tschechische Form umschreiben** — entweder Hannos Schreibweise übernehmen oder ihn vorher fragen. Hanno hat z.B. „Kutenberg"→„Kutná Hora" selbst korrigiert; das war nicht meine Aufgabe. Ausnahme: Wenn der Eigenname eindeutig falsch ist (z.B. „Beirut" statt „Bayreuth" bei Wagner-Kontext), frag vorher.
+
+Wenn Hanno den Eintrag manuell repariert hat (er hat das z.B. am 26.08.2026 mit dem 24.08.-Eintrag getan — Schaden, der nicht hätte sein dürfen), ist die Lektion: der Push hätte gar nicht erst stattfinden dürfen. Lieber einmal mehr nachfragen als Schaden anrichten.
 
 - **Bekannte STT-Aussetzer, deren Korrektur sicher ist (einfach anwenden):**
   - „Schwimmbäck" → „Schwimmbecken" (STT-Aussetzer, **kein** Stilmerkmal)
