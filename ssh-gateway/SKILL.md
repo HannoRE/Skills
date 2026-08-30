@@ -15,6 +15,29 @@ Hannos Heimserver liegen in einem privaten Netz. Direkter SSH-Zugriff von AI-Nod
 - Bonfire: ESXi-Lab, WoL
 - Archimedes: USV für Marvin
 - mercury: Cloud-Gateway, aktuell gestoppt
+- Oracle: Oracle-Cloud-Node (Ubuntu 24.04, Tailscale-tagged)
+- kali: Tailscale-Peer, nur online bei Bedarf
+
+## Outpost-Wrapper (Custom-Ports!)
+
+Marvin und Minsky sind **nicht** auf Standard-Port 22 erreichbar — sie hängen hinter **Outpost-Wrapper-Hosts** mit eigenen Ports:
+
+| SSH-Alias | Ziel | Host (Tailscale-IP) | Port | User |
+|---|---|---|---|---|
+| `outpost-marvin` | Marvin | 100.120.120.100 | **33222** | hanno |
+| `outpost` | Minsky | 100.120.110.100 | **32226** | hanno |
+| `oracle` | Oracle | 100.120.50.120 | 22 | hanno |
+
+Die Aliase stehen in `~/.ssh/config` auf dem AI-Node. **Immer `ssh <alias>` benutzen, nicht die IP direkt** — sonst landet man auf einem geschlossenen Port und wähnt sich fälschlich „ausgesperrt".
+
+## Vor jedem Test: Config lesen, dann entscheiden
+
+Bevor „kein SSH-Zugriff" gemeldet wird:
+1. `cat ~/.ssh/config` — gibt es Aliase mit Custom-Ports?
+2. `tailscale status` — ist der Zielhost überhaupt online?
+3. Erst dann mit `ssh -v <alias>` testen
+
+**Anti-Pitfall:** Wer direkt auf `host 22` der Tailscale-IP pingt/ssht und nichts zurückkommt, schließt fälschlich auf „Firewall blockt" — dabei läuft SSH auf einem **Outpost-Port**. Hanno hat das am 30.08.2026 einmal korrigieren müssen.
 
 ## Empfehlungen
 
