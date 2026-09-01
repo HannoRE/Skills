@@ -30,11 +30,11 @@ Der `dbx`-Wrapper (`~/.local/bin/dbx`) ist ein Auto-Refresh-Wrapper für `dbxcli
 
 Wenn man `echo code | dbxcli login` pipet, generiert dbxcli pro Aufruf eine neue `code_challenge`, der Code passt dann nicht zur übermittelten Authorization-URL. **Statt:** manuell via `requests` / `curl` und direkt `~/.config/<tool>/credentials.json` setzen. Lehre: nie Codes in dbxcli pipen, wenn ein eigener code_verifier kontrolliert wird.
 
-## OAuth-App-Daten (lokalisiert in credentials.json + wrapper)
+## OAuth-App-Daten (NICHT hier dokumentieren — aus Public-Skill entfernt 2026-09-01 nach GitGuardian-Alert)
 
-- App Key: `6ygumfjv2bz7q45`
-- App Secret: `tt50ob17zzyo0k9`
-- Account: Hanno Reents <hanno@reents.tv>, Pro
+App Key + Secret werden **ausschließlich lokal** in `~/.config/dbxcli/credentials.json` und im Wrapper-Skript `~/.local/bin/dbx` gehalten. Für die Rekonstruktion des Setups siehe `dotfiles/local/bin/dbx` oder das private Setup-Notizbuch — **nicht in diesem Skill**.
+
+Account & Email: siehe private Setup-Doku (nicht in Public-Skill).
 
 ## Häufige Befehle
 
@@ -47,7 +47,7 @@ dbx put <lokal> <remote>      # Upload
 
 ## Pfade
 
-- Dropbox: `/Zuhaume/Obsidian/Tagebuch/<jahr>.md` (der „Zuhaume"-Tippfehler ist persistent — dbxcli hat ihn einmal so angelegt; funktioniert, einfach konsistent verwenden)
+- Dropbox: `/Zuhause/Obsidian/Tagebuch/<jahr>.md` (immer diese Schreibweise — `Zuhause`, nicht `Zuhaume`)
 - Lokales Repo mit dem Wrapper-Skript: `~/.local/bin/dbx`
 
 ## Siehe auch
