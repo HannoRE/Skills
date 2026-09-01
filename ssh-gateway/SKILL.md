@@ -53,7 +53,7 @@ Wer Schritt 1 überspringt, brennt 5–10 Minuten Debug-Zeit für nichts — ist
 - SSH-CA als zentrale Identität statt manuell verteilte authorized_keys
 - ProxyJump auf dem neuen Gateway als Default-Einstiegspunkt
 - AuthorizedKeysCommand auf Marvin als Mittelweg, falls CA zu invasiv ist
-- SSH-CA-Konzept in `Obsidian/Referenz/SSH-CA-Konzept.md` (in Arbeit)
+- SSH-CA-Konzept in `Obsidian/Ressourcen/SSH-CA-Konzept.md` (in Arbeit; bei Anlage dorthin statt ins aufgelöste `Referenz/`)
 
 ## Merksätze
 
