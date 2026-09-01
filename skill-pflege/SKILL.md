@@ -20,6 +20,25 @@ Weil das Repo öffentlich ist, vor jedem Commit prüfen:
 - Keine Secrets/Tokens in Klartext, auch nicht in Beispielen.
 - Im Zweifel: Detail durch generische Formulierung ersetzen, nicht ganz weglassen — der Skill muss weiter funktional bleiben.
 
+### Pitfall — Datei-Sanierung reicht NICHT, Git-History bleibt giftig
+
+**Verifiziert 2026-09-01 (GitGuardian-Alert):** Ein Dropbox-App-Secret stand in einer Reference-Datei. Der File-Sanitizer hat den Wert aus `tagebuch-hanno/references/dbx-wrapper-recipes.md` entfernt — neuer Commit, neue Rev. Aber der **ursprüngliche Commit** (`37375518fc…`) enthält den Secret weiterhin, und `git log -p` zeigt ihn. GitGuardian und andere Scanner sehen genau das. Die Datei zu säubern ist Pflichterfüllung gegenüber der Sache, **nicht** gegenüber dem Scanner.
+
+**Reihenfolge bei Secret-Funden im Public-Repo:**
+
+1. **Sofort rotieren.** Nicht warten, bis History bereinigt ist. Das Secret ist ab dem Moment des Pushes kompromittiert; das gilt auch, wenn es nur Sekunden öffentlich war. Anbieter-Konsole öffnen, Secret/Token neu generieren, lokal einspielen.
+2. **Datei säubern, committen, pushen.** Schließt den GitGuardian-Alert-Spam und verhindert weiteres Leak.
+3. **History bereinigen** (separater Schritt, niedrigere Prio, braucht Rücksprache wenn Force-Push):
+   - `git filter-repo --path <file> --invert-paths` (überschreibt History für alle Branches/Tags)
+   - Oder `bfg-repo-cleaner --delete-files <file>` (schneller bei großen Repos)
+   - Anschließend `git reflog expire --expire=now --all && git gc --prune=now --aggressive`
+   - **Force-Push** erforderlich (`git push --force-with-lease`), bricht für Klone die History-Konsistenz — daher nur in Rücksprache mit Hanno.
+4. **Bei mehreren Klones / Mirrorn** (Marvin-Container + Hetzner + Claude via MCP) nach der Bereinigung alle nachziehen — sonst hat einer den alten Stand.
+
+**Was NICHT hilft:** `git commit --amend` auf den ursprünglichen Commit (klont niemanden erneut), Löschen der Datei im aktuellen Stand ohne History-Rewrite, `git filter-branch` (deprecated seit 2020, in vielen Setups nicht mehr installiert).
+
+**Erkennungsmerkmal für „ist es ein echter Secret":** Der Wert matcht ein bekanntes Format (z. B. `sl.u.…` für Dropbox, `ghp_…` oder `github_pat_…` für GitHub, `sk-…` für OpenAI, `xox[bpoas]-…` für Slack) ODER der Wert ist im Klartext deutlich länger als 32 Zeichen mit alphanumerischem/hybridem Inhalt. Bei Zweifel: `git log -p <file>` einmal komplett durchscrollen, der menschliche Blick erkennt Muster, die ein Grep übersieht.
+
 ## Neuen Skill anlegen
 
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
