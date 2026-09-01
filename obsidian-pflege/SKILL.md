@@ -34,6 +34,27 @@ Wikilinks wurden aktualisiert; falls in einer Notiz noch ein alter Pfad auftauch
 ist das ein Migrations-Bug und sollte gefixt werden (nicht stillschweigend
 hingenommen).
 
+### Migrations-Workflow (wenn Hanno eine Vault-Umstrukturierung anstößt)
+
+Bewährte Reihenfolge — in der Praxis am 2026-09-01 durchgespielt:
+
+1. **Bestandsaufnahme.** Erst alle Top-Level-Ordner auflisten (`ls -1 -d */`), dann in jeden Ordner schauen, was drin ist. Faustregel: ein Ordner mit 0–2 Dateien ist verdächtig — entweder frisch angelegt und leer, oder eine vergessene Nische.
+2. **Mapping-Plan als Datei ablegen.** NICHT sofort umziehen. Erst eine `.umbau-mapping.md` im Vault anlegen mit der Tabelle „Von → Nach / Warum". Das ist die Denkpause und macht den Plan sichtbar für Hanno, bevor irgendwas verschoben wird.
+3. **Clarify der offenen Fragen.** Wenn mehrere plausible Mappings existieren (z. B. „kommt KI-Agenten nach Persönlich oder als eigener Top-Level?"), mit `clarify` nachfragen. Bei der Migrationsentscheidung sind oft mehrere Wege sinnvoll; die Wahl sollte begründet sein, nicht default.
+4. **Atomar umbenennen.** `os.rename(src, dst)` statt `shutil.copy2`+`os.remove`. Reason: `copy2` ruft `copystat` auf, das bei gerade-von-Dropbox-aktualisierten Dateien race-conditiont mit `OSError: [Errno 5] Input/output error`. `os.rename` ist atomar auf demselben Filesystem und umgeht den read+write-Pfad.
+5. **Leere Ordner aufräumen.** Wenn ein Quellordner nach allen Moves leer ist, löschen (sonst Geisterordner).
+6. **Wikilinks in einem Rutsch updaten.** Grep nach `\.\./<alterOrdner>/`, `\.\./<alterOrdner>/`, `<alterOrdner>/` in allen Wikilinks. Plain-Text-Treffer (Beschreibungen alter Struktur in Doku-Notizen) NICHT vergessen — die muss man mit Sinn ersetzen, nicht stumm durchgehen lassen.
+7. **README der migrierten Ordner anpassen.** Header und „Verwandt"-Abschnitt auf neue Pfade. Migrations-Notiz („Pfad seit YYYY-MM-DD: … vorher unter ALT/") bewusst behalten — sie dokumentiert, warum der Ordner mal woanders war.
+8. **Vault-Doku updaten.** Wenn es eine Notiz gibt, die die Vault-Struktur selbst dokumentiert (typisch: `Ressourcen/Server/Dropbox Ordnerstruktur.md`), Sektion Vault mit dem neuen Schema überschreiben + Migrations-Hinweis anhängen.
+9. **Pre-Commit-Gate.** Wenn das Repo betroffen ist (Skills, Sync-Skripte): Grep über `git diff --cached` nach alten Pfad-Patterns, dann commit + push. Beispiel: `obsidian-pflege/SKILL.md` musste gepatcht werden, weil die Default-Speicherort-Regel auf `Referenz/` zeigte.
+10. **Cloud-Sync triggern.** Vault-Änderungen sind erst sichtbar, wenn die geänderten Notizen per `dbx put` zurück in die Dropbox geschoben werden. Dropbox synct **nicht** automatisch in die andere Richtung (lokal → cloud muss explizit).
+
+### Anti-Patterns (was Hanno explizit nicht will)
+
+- **Standort-Info als Sektion in eine IT-Notiz einbetten.** Hanno hat am 2026-09-01 explizit widersprochen: Standorte sind persönliche Konstanten, nicht IT. Lieber eigene `Persönlich/Standorte.md` mit gegenseitigem Verweis auf die IT-Sicht in `Ressourcen/Server/`.
+- **Tags statt Struktur.** User-Meinung: PARA-light-Top-Level-Ordner sind besser als ein Wust von Tags, weil sichtbar beim Öffnen ohne Plugin-Abhängigkeit. Tags nur für Querschnitte (z. B. `#reise`, `#2026`) zusätzlich zur Ordner-Struktur, nicht statt.
+- **Zahlen-Präfixe (`0 Persönlich/`, `1 Projekte/`).** User-Präferenz vom 2026-09-01: Ordnernamen ohne Zahlen, weil alphabetische Sortierung in Obsidian ohnehin automatisch passiert und Zahlen visuell stören.
+
 ## Operationen
 
 - Vor jedem Schreibvorgang die Zieldatei lesen, damit der aktuelle Stand bekannt ist.
