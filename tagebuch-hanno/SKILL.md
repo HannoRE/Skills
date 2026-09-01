@@ -44,6 +44,8 @@ Beispiel aus der Praxis (25.08.2026): Der 24.08.-Eintrag existierte bereits mit 
 
 **Faustregel:** **Credentials haben genau eine Quelle.** In der Regel die JSON/INI/TOML-Config-Datei, nie das Skript. Wenn ein Wrapper Credentials fest verdrahtet, ist das ein latenter Bug, der spätestens bei der nächsten Rotation zuschlägt. Beim Code-Review eines Wrappers als Erstes prüfen: gibt es eine Quelle, oder sind Werte hardcoded?
 
+**Diagnose-Signatur „Wrapper-vs-JSON-Refresh-Drift":** Wenn `dbx account` Account-Daten zeigt, aber jeder echte API-Call (`dbx get`, `dbx put`, `dbx ls`) mit „app is disabled" / „invalid_client" / „401" fehlschlägt, **obwohl** ein direkter `curl`-Refresh mit den Werten aus `credentials.json` sauber durchläuft, dann hat der Wrapper eigene Credentials (hardcoded oder env). Fix-Reihenfolge: 1) `grep -n 'CLIENT_ID\|CLIENT_SECRET\|app[_-]key\|app[_-]secret' ~/.local/bin/dbx` → Treffer? Dann ist es der Wrapper. 2) Wrapper-Quelle auf `credentials.json` umstellen. 3) Keine Doppel-Haltung mehr.
+
 ## Regeln für die Formulierung
 
 - **Ziel: glatter, kohärenter Fließtext.** Hanno diktiert mündlich (Brabbel, Abbrüche, Füllwörter, Wortwiederholungen, Sätze fangen neu an). Hermes macht daraus **lesbaren, zusammenhängenden Text**. Das ist die Kernaufgabe — nicht „nur STT korrigieren". Ohne diesen Schritt ist der Eintrag nicht brauchbar.
