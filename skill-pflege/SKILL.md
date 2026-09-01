@@ -39,6 +39,67 @@ Weil das Repo öffentlich ist, vor jedem Commit prüfen:
 
 **Erkennungsmerkmal für „ist es ein echter Secret":** Der Wert matcht ein bekanntes Format (z. B. `sl.u.…` für Dropbox, `ghp_…` oder `github_pat_…` für GitHub, `sk-…` für OpenAI, `xox[bpoas]-…` für Slack) ODER der Wert ist im Klartext deutlich länger als 32 Zeichen mit alphanumerischem/hybridem Inhalt. Bei Zweifel: `git log -p <file>` einmal komplett durchscrollen, der menschliche Blick erkennt Muster, die ein Grep übersieht.
 
+### Was NICHT in einen Skill gehört (Negativ-Liste, lückenlos)
+
+Konkrete Werte sind tabu — **unabhängig davon, ob der Skill lokal oder für Dokumentationszwecke gedacht ist**. Erlaubt ist nur die *Pfad-/Konzept-Beschreibung*, nie der *Inhalt*:
+
+| Was | Beispiel erlaubt | Beispiel verboten |
+|---|---|---|
+| OAuth App Key / Client ID | `~/.config/dropbox-cli/app.key` | `6ygumfjv2bz7q45` |
+| OAuth App Secret / Client Secret | `~/.config/dropbox-cli/app.secret` (Pfad-Referenz) | `tt50ob17zzyo0k9` |
+| Access-Token / Refresh-Token | `siehe ~/.config/dropbox-cli/credentials.json` | `sl.u.AGtSMHSb0PMm…` |
+| SSH-Public-Keys (Ed25519-Fingerprint) | `~/.ssh/id_ed25519.pub` (Pfad) | der ganze 68-Zeichen-Key-String |
+| Persönliche E-Mails Dritter | `Hanno Reents <…@…>` (Rollenname) | `martin@reents.eu` (Klarname-Email) |
+| Telefonnummern Dritter | `+49 …` (Format) | konkrete Nummern wie `+49 170 2409866` |
+| Private IP-Adressen / Ports zur Infrastruktur | `Tailscale-100.x.x.x-Range, Outpost-Ports 33222/32226` (Konzept) | konkrete IPs wie `100.120.120.100:33222` |
+| Klarnamen externer Personen | `Mutter Andrea` (Rolle) | `Andrea Reents <andrea@…>` |
+| Private Buchungs-IDs / Reservierungs-Codes | `siehe Nextcloud Tasks` | `HMS4PCDJX` (Airbnb-Code) |
+
+**Faustregel:** Wenn der Wert nur für *einen* Account gilt oder nur *eine Person* identifiziert, gehört er nicht in einen Skill — egal wie harmlos er wirkt. Skills sind **Wiederverwendungs-Werkzeuge**, nicht Setup-Notizen.
+
+### Pitfall — Pre-Commit-Gate (History-Hygiene)
+
+**Verifiziert 2026-09-01 (zweiter Vorfall):** Nach dem GitGuardian-Alert wurde die Datei gesäubert + gefiltert. Trotzdem hätte der Workflow früher ansetzen können. Standard vor jedem Commit:
+
+```bash
+cd /home/hermes/repos/Hanno/Skills
+git add -A
+git diff --cached | grep -E "^[+]" | grep -iE "secret|token|key|password|credential|client[_-]?id|client[_-]?secret|access_token|refresh_token|api[_-]?key|private[_-]?key|sl\.|ghp_|sk-|xox[bpoas]-|-----BEGIN"
+echo "(sollte LEER sein; jeder Treffer = prüfen, ob Wert oder nur Konzept-Wort)"
+```
+
+**Bei Treffer:** nicht committen. Erst entweder Wert ersetzen (siehe Negativ-Liste) oder, falls nur ein Konzept-Wort gemeint war, Zeile umformulieren.
+
+**Plus — History-Check nach jedem Filter-Branch / Force-Push:**
+```bash
+git log --all -p | grep -E "6ygumfjv2bz7q45|tt50ob17zzyo0k9|sl\.u\.|ghp_|sk-|xox-"
+echo "(sollte LEER sein — Diff-Text zählt nicht, aber unreachable Objects müssen weg sein)"
+git reflog expire --expire=now --expire-unreachable=now --all
+git gc --prune=now --aggressive
+```
+
+### Pitfall — Drei Klones, eine Quelle
+
+Das Repo liegt in drei Checkouts (Marvin nativ, Hetzner sekundär, Claude via Marketplace). **Alle drei müssen nach Force-Push nachgezogen werden**, sonst hat einer den alten Stand mit Secrets. Workflow:
+
+1. **Push erzwingen** auf `origin/main` (Marvin → GitHub).
+2. **Marvin-Container** (`/opt/stacks/hermes/skills-repo`): `git pull --ff-only` ODER warten bis zur nächsten Sync-Tick (20 min).
+3. **Hetzner-AI-Node** (`/home/hermes/repos/Hanno/Skills`): `git pull --ff-only`.
+4. **Claude via Marketplace**: `/plugin marketplace update` (Claude Code) bzw. Web-Re-Sync.
+5. **Verifizieren** — auf jedem Checkout ein `git log -p --grep "secret\|token"` bzw. `git grep <verdächtiger_wert>` und sicherstellen, dass nichts Altes mehr da ist.
+
+**Schnelltest über alle drei Klones in einem Rutsch:**
+```bash
+for path in /opt/stacks/hermes/skills-repo /home/hermes/repos/Hanno/Skills /home/shared/Skills; do
+  if [ -d "$path" ]; then
+    echo "=== $path ==="
+    cd "$path"
+    git log --oneline -3
+    git grep "<verdächtiger_wert>" 2>/dev/null || echo "(sauber)"
+  fi
+done
+```
+
 ## Neuen Skill anlegen
 
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
