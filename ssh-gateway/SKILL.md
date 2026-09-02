@@ -39,12 +39,21 @@ Bevor „kein SSH-Zugriff" gemeldet wird:
 
 **Anti-Pitfall:** Wer direkt auf `host 22` der Tailscale-IP pingt/ssht und nichts zurückkommt, schließt fälschlich auf „Firewall blockt" — dabei läuft SSH auf einem **Outpost-Port**. Hanno hat das am 30.08.2026 einmal korrigieren müssen.
 
+**Anti-Pitfall (Wiederholung am 01.09.2026):** Der erste Reflex beim „kein SSH-Zugriff"-Verdacht ist `~/.ssh/known_hosts` oder `~/.ssh/authorized_keys` zu prüfen. Beide sind **irrelevant** für die Frage „warum komme ich nicht auf den Wrapper-Host". Die einzig maßgebliche Datei ist `~/.ssh/config` — dort stehen die Aliasse mit ihren Custom-Ports, und **ohne sie** landet man auf Standard-Port 22, der auf Outpost-Wrappern geschlossen ist. Reihenfolge beim SSH-Probing strikt:
+
+1. `cat ~/.ssh/config` — Aliasse mit Ports lesen (1 Sekunde, löst die Frage meistens sofort)
+2. `tailscale status` — ist der Zielhost online?
+3. `ssh -v <alias>` mit dem Alias-Namen (nicht der IP!) — verbose-Output zeigt, welcher Port tatsächlich angesprochen wird
+4. **Erst dann**, wenn alle drei Punkte ohne Ergebnis bleiben: Firewall/Netzwerk prädikatisieren
+
+Wer Schritt 1 überspringt, brennt 5–10 Minuten Debug-Zeit für nichts — ist im konkreten Fall zweimal hintereinander passiert (30.08. und 01.09.2026).
+
 ## Empfehlungen
 
 - SSH-CA als zentrale Identität statt manuell verteilte authorized_keys
 - ProxyJump auf dem neuen Gateway als Default-Einstiegspunkt
 - AuthorizedKeysCommand auf Marvin als Mittelweg, falls CA zu invasiv ist
-- SSH-CA-Konzept in `Obsidian/Referenz/SSH-CA-Konzept.md` (in Arbeit)
+- SSH-CA-Konzept in `Obsidian/Ressourcen/SSH-CA-Konzept.md` (in Arbeit; bei Anlage dorthin statt ins aufgelöste `Referenz/`)
 
 ## Merksätze
 
