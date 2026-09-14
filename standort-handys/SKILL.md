@@ -32,6 +32,25 @@ Adressen und persönliche Ortsbezüge (Wohnheim, Eltern, Großeltern) stehen in
 `Zuhause/Obsidian/Persönlich/Standorte.md` (Obsidian Wikilink: [[Standorte]])
 → **dort nachschlagen, nicht hier**. Der Skill hält nur die HA-Technik, damit er public-safe bleibt.
 
+## Mehrstandort-HA-Struktur: Standorte als Entity-Präfix
+
+Die zentrale HA-Instanz (Miesbach) koppelt andere Haushalte über die
+**Remote Home-Assistant Integration** — deren Entities bekommen ein
+Standort-Präfix im Entity-ID:
+
+- **Aurich (Großelternhaus, remote HA):** Präfix `aurich_` — z. B.
+  `switch.aurich_wohnzimmer`, `switch.aurich_kuche`,
+  Zigbee-Coordinator `binary_sensor.aurich_slzb_06u_*` (SLZB-06U)
+- **Miesbach:** ohne Präfix (`light.wohnzimmer`, `light.hanno` …)
+
+Such-/Schaltregeln:
+1. Bei Fenster-Geräten IMMER auch mit Standort-Präfix suchen
+   (`aurich wohnzimmer`), nicht nur den Raumnamen.
+2. Haushaltslichter laufen oft als `switch.*` (Shelly/Relais), nicht als
+   `light.*` — daher domain-übergreifend suchen.
+3. Schalten via `ha_call_service` braucht ALLE drei Parameter:
+   `domain`, `service`, `entity_id`.
+
 ## Regeln
 
 1. Erst `person.hanno` lesen; zur Auflösung `geocoded_location` UND Device-Tracker nutzen.
