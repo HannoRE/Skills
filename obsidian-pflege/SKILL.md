@@ -67,3 +67,13 @@ Claude und Hermes arbeiten auf denselben Dateien, nur über unterschiedliche Sch
 
 - Claude: über die Nextcloud-Notes-Tools (`nc_notes_*`). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
 - Hermes: direkter Dateizugriff auf den Obsidian-Vault-Pfad (`Zuhause/Obsidian/...`).
+
+### Pfad-Update nach Host-Wechsel (Sep 2026)
+
+Hermes' Vault-Wurzel ist jetzt `/home/hermes/Dropbox` (nativer Daemon-Mount,
+bidirektional synchronisiert). Der alte Pfad `/home/shared/dropbox/` existiert
+auf dem neuen Host nicht mehr. Schreibvorgänge gehen direkt auf den Mount
+(`~/Dropbox/Zuhause/Obsidian/...`); der alte Migrations-Schritt 10
+(„Cloud-Sync triggern“ per `dbx put`) entfällt mechanisch — der Daemon
+synchronisiert sentido. Verifikations-Praxis: nach wichtigen Schreibvorgängen
+short-check, dass die Datei in der Cloud auftaucht.
