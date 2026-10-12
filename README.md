@@ -27,6 +27,7 @@ Drei Klones hängen an diesem Repo (Marvin nativ, Hetzner sekundär, Claude via 
 - `obsidian-pflege` – Obsidian-Konventionen
 - `ssh-gateway` – SSH-Zugangslogik
 - `mail-umgang` – Mail-Antwortmuster
+- `litellm-admin` – LiteLLM-Verwaltung: Team-Aliasse, Model-Rename-Fallen, Direct-API-Workarounds
 
 ## Verwendung
 
