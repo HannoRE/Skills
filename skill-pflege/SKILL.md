@@ -105,15 +105,18 @@ done
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
 2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-pflege` als Vorlage.
 3. Redaktions-Check (oben) durchführen.
-4. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
+4. **`.claude-plugin/marketplace.json` mit anpassen:** `version` hochzählen (z. B. Patch-Version +1) und die `description` um den neuen Skill-Namen ergänzen (bzw. beim Entfernen eines Skills herausnehmen). Das ist **nicht optional** und gilt für jeden neuen/entfernten Skill-Ordner, nicht nur für strukturelle Änderungen — siehe Begründung unten bei „Wie es bei Claude ankommt".
+5. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
 
 **Patch-Tool-Falle bei deutscher Markdown:** Wenn du einen Skill (oder eine andere deutsche Markdown-Datei) per `patch` mit `old_string`/`new_string` editierst, müssen die deutschen Anführungszeichen (`„"`, U+201E/U+201C) im `old_string` **Byte für Byte** mit der Datei übereinstimmen. ASCII `"` matched nicht, auch wenn es „gleich aussieht". Bei Fehlschlag (`Could not find a match for old_string`): die Originalstelle mit `read_file` neu laden, das Unicode-Zeichen 1:1 aus der Datei kopieren, nicht aus dem Gedächtnis. Diese Falle gilt für jeden Skill, der deutsche Texte enthält, nicht nur für Tagebucheinträge.
 
 ## Wie es bei Claude ankommt
 
-Automatisch, kein Zusatzschritt: `.claude-plugin/marketplace.json` referenziert das gesamte Repo mit `"skills": "."`. Claude Code (`/plugin marketplace update`) und claude.ai (Customize → Plugins → Sync) scannen den Repo-Root nach `<name>/SKILL.md`-Verzeichnissen und finden neue Skills selbständig.
+**Nicht automatisch — braucht den Versionsbump aus Schritt 4 oben.** `.claude-plugin/marketplace.json` referenziert das gesamte Repo zwar mit `"skills": "."`, aber das legt nur fest, *wo* gesucht wird, nicht *ob* eine Änderung erkannt wird. Weder die lokale Marketplace-Verwaltung (`claude plugin marketplace update` / Auto-Update) noch claude.ais Account-Sync (`@synced`, verwaltet unter Customize → Plugins) vergleichen den tatsächlichen Repo-Inhalt — beide prüfen ausschließlich, ob sich das `version`-Feld im Manifest geändert hat.
 
-Nur bei strukturellen Änderungen (z. B. ein komplett neues, separates Plugin statt eines weiteren Skill-Ordners) muss `.claude-plugin/marketplace.json` selbst angepasst werden.
+**Verifiziert 2026-10-15:** Das Manifest stand seit dem Erstellungs-Commit (2026-08-16, `version: "1.0.0"`) unverändert, obwohl danach vier weitere Skills dazukamen (`litellm-admin`, `nextcloud-aufgaben`, `skill-pflege`, `standort-handys`). Weder Claude Code noch claude.ai haben in der Zwischenzeit je etwas Neues gesehen — nicht, weil der Sync kaputt war, sondern weil es für keinen der beiden Mechanismen ein Änderungssignal gab.
+
+Nach einer Versionsänderung in claude.ai unter Customize → Plugins → Marketplace → „Check for updates" manuell anstoßen, falls es nicht zeitnah von selbst passiert (kein dokumentiertes festes Intervall, keine Erzwingung über die CLI möglich). Bei anhaltender Staleness trotz Versionsbump: Marketplace dort entfernen und neu hinzufügen (`Add → Add marketplace → Add from a repository`).
 
 ## Wie es bei Hermes ankommt
 
