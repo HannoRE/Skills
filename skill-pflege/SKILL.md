@@ -103,7 +103,7 @@ done
 ## Neuen Skill anlegen
 
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
-2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-pflege` als Vorlage.
+2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-vault-pflege` als Vorlage.
 3. Redaktions-Check (oben) durchführen.
 4. **`.claude-plugin/marketplace.json` mit anpassen:** `version` hochzählen (z. B. Patch-Version +1) und die `description` um den neuen Skill-Namen ergänzen (bzw. beim Entfernen eines Skills herausnehmen). Das ist **nicht optional** und gilt für jeden neuen/entfernten Skill-Ordner, nicht nur für strukturelle Änderungen — siehe Begründung unten bei „Wie es bei Claude ankommt".
 5. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.

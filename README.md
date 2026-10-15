@@ -24,7 +24,7 @@ Drei Klones hängen an diesem Repo (Marvin nativ, Hetzner sekundär, Claude via 
 ## Geteilte Skills
 
 - `tagebuch-hanno` – Tagebuch-Workflow
-- `obsidian-pflege` – Obsidian-Konventionen
+- `obsidian-vault-pflege` – Obsidian-Vault-Konventionen
 - `ssh-gateway` – SSH-Zugangslogik
 - `mail-umgang` – Mail-Antwortmuster
 - `litellm-admin` – LiteLLM-Verwaltung: Team-Aliasse, Model-Rename-Fallen, Direct-API-Workarounds

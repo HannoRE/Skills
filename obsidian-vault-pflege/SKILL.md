@@ -1,19 +1,21 @@
 ---
-name: obsidian-pflege
-description: Obsidian-Notizkonventionen einhalten: Struktur, Stil.
+name: obsidian-vault-pflege
+description: Obsidian-Vault-Notizkonventionen einhalten: Struktur, Stil, sicheres Schreiben.
 ---
 
-# Obsidian – Pflege
+# Obsidian – Vault-Pflege
 
-Vault-Wurzel: `Zuhause/Obsidian/`. Persönliche Notizen liegen in `Notizen.md`; alles, was
-dauerhaft bleiben soll, ist in die vier PARA-Light-Kategorien einsortiert: `Persönlich/`
-(Konstanten + Sammlungen), `Projekte/` (aktive Vorhaben), `Ressourcen/` (reines Nachschlagewerk)
-und `KI Workspace/` (Input/Output für KI-Routinen, nicht für Hanno).
+Vault-Wurzel: `Dropbox/Zuhause/Obsidian/`. Persönliche Notizen liegen in `Notizen.md`; alles, was
+dauerhaft bleiben soll, ist in die PARA-Light-Kategorien einsortiert: `Persönlich/`
+(Konstanten + Sammlungen), `Projekte/` (aktive Vorhaben), `Ressourcen/` (reines Nachschlagewerk,
+enthält u. a. `Server/`) und `KI Workspace/` (Input/Output für KI-Routinen, nicht für Hanno).
+Daneben zwei weitere Top-Level-Ordner mit eigener Semantik: `Tagebuch/` (Chronologie) und
+`Rezepte/` (Kochrezepte).
 
 ## Harte Regeln
 
 - `Notizen.md` ist ausschließlich Hannos persönliche Notizfläche. Niemals dauerhafte Referenzen, Tool-Doku oder Projektinhalte dort ablegen.
-- Neue thematische Inhalte gehören in einen der vier PARA-Light-Ordner: `Persönlich/` für Konstanten und persönliche Sammlungen, `Projekte/` für laufende Vorhaben mit klarem Ziel, `Ressourcen/` für reines Nachschlagewerk ohne Lebensbezug. Top-Level-Verzeichnisse `Tagebuch/` und `KI Workspace/` haben eigene Semantik (Chronologie bzw. Maschinen-Workspace) und bleiben reserviert.
+- Neue thematische Inhalte gehören in einen der PARA-Light-Ordner: `Persönlich/` für Konstanten und persönliche Sammlungen, `Projekte/` für laufende Vorhaben mit klarem Ziel, `Ressourcen/` für reines Nachschlagewerk ohne Lebensbezug. Top-Level-Verzeichnisse `Tagebuch/`, `Rezepte/` und `KI Workspace/` haben eigene Semantik (Chronologie, Kochrezepte bzw. Maschinen-Workspace) und bleiben reserviert.
 - Niemals Inhalte aus `Notizen.md` automatisch verschieben; Hanno entscheidet.
 - Brainstorming-Stände, Tagesdiskussionen oder Notizen, die den Stand eines Moments festhalten, gehören nicht in den Vault. Sie werden mit `YYMMDD <Begriff>.md` ins `Archiv/YYYY/` gelegt und nicht in Obsidian gepflegt. Begründung: nichts ewig Bestehendes, kein Tagebucheintrag, sondern eine Momentaufnahme, die archiviert wird. Beispiel: Vier App-Ideen für den Urlaub (Diskussion mit Papa, 20.08.2026) wurde als `Archiv/2026/260820 App Ideen für den Urlaub.md` abgelegt, nicht in `Obsidian/Projekte/`.
 - **Standorte** liegen in `Persönlich/Standorte.md` (seit 2026-09-01). NICHT als Sektion in eine bestehende IT-/Infrastruktur-Notiz einbetten — Standorte sind semantisch persönliche Konstanten, nicht IT-Thema. Verwandte IT-Sicht (Serverschrank-Inventar, HA-Flächen, Tailscale-IPs) bleibt separat in `Ressourcen/Server/Netzwerk & Hardware – Physische Infrastruktur.md` und referenziert `Persönlich/Standorte.md`.
@@ -46,7 +48,7 @@ Bewährte Reihenfolge — in der Praxis am 2026-09-01 durchgespielt:
 6. **Wikilinks in einem Rutsch updaten.** Grep nach `\.\./<alterOrdner>/`, `\.\./<alterOrdner>/`, `<alterOrdner>/` in allen Wikilinks. Plain-Text-Treffer (Beschreibungen alter Struktur in Doku-Notizen) NICHT vergessen — die muss man mit Sinn ersetzen, nicht stumm durchgehen lassen.
 7. **README der migrierten Ordner anpassen.** Header und „Verwandt"-Abschnitt auf neue Pfade. Migrations-Notiz („Pfad seit YYYY-MM-DD: … vorher unter ALT/") bewusst behalten — sie dokumentiert, warum der Ordner mal woanders war.
 8. **Vault-Doku updaten.** Wenn es eine Notiz gibt, die die Vault-Struktur selbst dokumentiert (typisch: `Ressourcen/Server/Dropbox Ordnerstruktur.md`), Sektion Vault mit dem neuen Schema überschreiben + Migrations-Hinweis anhängen.
-9. **Pre-Commit-Gate.** Wenn das Repo betroffen ist (Skills, Sync-Skripte): Grep über `git diff --cached` nach alten Pfad-Patterns, dann commit + push. Beispiel: `obsidian-pflege/SKILL.md` musste gepatcht werden, weil die Default-Speicherort-Regel auf `Referenz/` zeigte.
+9. **Pre-Commit-Gate.** Wenn das Repo betroffen ist (Skills, Sync-Skripte): Grep über `git diff --cached` nach alten Pfad-Patterns, dann commit + push. Beispiel: dieser Skill musste 2026-10-15 gepatcht werden, weil die Vault-Wurzel-Regel noch auf den alten Pfad ohne `Dropbox/`-Präfix zeigte.
 10. **Cloud-Sync triggern.** Vault-Änderungen sind erst sichtbar, wenn die geänderten Notizen per `dbx put` zurück in die Dropbox geschoben werden. Dropbox synct **nicht** automatisch in die andere Richtung (lokal → cloud muss explizit).
 
 ### Anti-Patterns (was Hanno explizit nicht will)
@@ -59,14 +61,24 @@ Bewährte Reihenfolge — in der Praxis am 2026-09-01 durchgespielt:
 
 - Vor jedem Schreibvorgang die Zieldatei lesen, damit der aktuelle Stand bekannt ist.
 - Niemals vorhandene Inhalte überschreiben oder löschen.
-- Bei Aktualisierungen Patch statt Full-Write.
+- Bei Aktualisierungen Patch statt Full-Write — Änderung lokal in den vollständig gelesenen Inhalt einfügen, nicht nur den neuen Abschnitt isoliert schreiben.
+
+### Pitfall — WebDAV/Notes-Schreiben ersetzt immer die ganze Datei
+
+**Verifiziert 2026-10-15:** Jeder Zugriffsweg, der über WebDAV schreibt (dazu zählt Claudes Nextcloud-Notes-Zugriff, siehe „Zugriffsweg" unten), ersetzt beim Schreiben die **gesamte Datei** — es gibt kein serverseitiges Append/Patch. Es gibt also keinen "nur den geänderten Abschnitt senden"-Modus.
+
+**Deshalb zwingend, bei jedem Schreibvorgang über diesen Weg:**
+1. Datei vollständig lesen, inklusive ETag (falls das Tool ihn liefert).
+2. Änderung **lokal** in den vollständigen, gelesenen Inhalt einfügen (nicht nur den neuen Teil im Kopf behalten).
+3. Den **kompletten** (geänderten) Inhalt zurückschreiben, mit dem gelesenen ETag, falls das Tool das unterstützt — verhindert ein Lost-Update, wenn sich die Datei zwischen Lesen und Schreiben anderswo geändert hat (z. B. durch Hanno selbst in Obsidian).
+4. Ohne Etag-Unterstützung: unmittelbar vor dem Schreiben nochmal lesen, um die Race-Condition-Fenster möglichst klein zu halten.
 
 ## Zugriffsweg (agentenabhängig)
 
 Claude und Hermes arbeiten auf denselben Dateien, nur über unterschiedliche Schnittstellen:
 
-- Claude: über die Nextcloud-Notes-Tools (`nc_notes_*`). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
-- Hermes: direkter Dateizugriff auf den Obsidian-Vault-Pfad (`Zuhause/Obsidian/...`).
+- Claude: über die Nextcloud-Notes-Tools (`nc_notes_*`), die intern per WebDAV schreiben (siehe Pitfall oben). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
+- Hermes: direkter Dateizugriff auf den Obsidian-Vault-Pfad (`~/Dropbox/Zuhause/Obsidian/...`).
 
 ### Pfad-Update nach Host-Wechsel (Sep 2026)
 
@@ -75,5 +87,5 @@ bidirektional synchronisiert). Der alte Pfad `/home/shared/dropbox/` existiert
 auf dem neuen Host nicht mehr. Schreibvorgänge gehen direkt auf den Mount
 (`~/Dropbox/Zuhause/Obsidian/...`); der alte Migrations-Schritt 10
 („Cloud-Sync triggern“ per `dbx put`) entfällt mechanisch — der Daemon
-synchronisiert sentido. Verifikations-Praxis: nach wichtigen Schreibvorgängen
-short-check, dass die Datei in der Cloud auftaucht.
+synchronisiert selbständig. Verifikations-Praxis: nach wichtigen Schreibvorgängen
+kurz prüfen, dass die Datei in der Cloud auftaucht.

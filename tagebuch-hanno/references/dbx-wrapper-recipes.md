@@ -90,4 +90,4 @@ dbx put <lokal> <remote>      # Upload
 
 - `skill-pflege/SKILL.md` — Negativ-Liste, Pre-Commit-Gate, Multi-Klone-Sync (warum wir hier keine konkreten Werte schreiben)
 - `tagebuch-hanno/SKILL.md` — wo der Datei-Inhalt (Tagebuch) liegt, das per Dropbox synchronisiert wird
-- `obsidian-pflege` — allgemeine Obsidian-Konventionen
+- `obsidian-vault-pflege` — allgemeine Obsidian-Vault-Konventionen
