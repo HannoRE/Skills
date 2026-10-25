@@ -1,68 +1,60 @@
 ---
 name: ssh-gateway
-description: SSH zu Hannos Heimserver: immer über Gateway, nie direkt.
+description: "SSH zu Hannos Servern: direkt per Tailscale mit Tresor-Keys."
 ---
 
-# SSH – Gateway-Logik
+# SSH – Zugriff auf Hannos Server
 
-Hannos Heimserver liegen in einem privaten Netz. Direkter SSH-Zugriff von AI-Nodes ist nicht vorgesehen. Immer über Tailscale oder über die VPN-/Gateway-Hops, die der jeweilige Server erwartet.
+Hannos Server und Geräte liegen im privaten Tailscale-Netz. Seit 2026-10-20 erreicht jedes Gerät jedes andere **direkt per Tailscale**; es gibt keinen Hop mehr über Marvin. Die SSH-Schlüssel liegen im Bitwarden Secrets Manager, jedes Gerät lädt sie in einen eigenen Agenten. Konkrete IPs, Schlüssel und Ports stehen nur in der SSH-Config auf dem jeweiligen Gerät, nicht hier (öffentliches Repo).
 
 ## Server-Inventar
 
-- Marvin: Hauptserver, Docker, Graylog, Nextcloud, Authentik, Jumphost
-- Minsky: GPU-Host, Outpost-Container
+- Marvin: Hauptserver, Docker, Graylog, Nextcloud, Authentik, Jumphost für externe Outposts
+- Minsky: GPU-Host, trägt Outpost-Container; meist aus, per Wake-on-LAN oder Home-Assistant-Schalter
 - Merlin: Backup-Ziel, Wake-on-LAN für Borg
-- Bonfire: ESXi-Lab, WoL
-- Archimedes: USV für Marvin
-- mercury: Cloud-Gateway, aktuell gestoppt
-- Oracle: Oracle-Cloud-Node (Ubuntu 24.04, Tailscale-tagged)
-- kali: Tailscale-Peer, nur online bei Bedarf
+- Bonfire: ESXi-Lab, Wake-on-LAN
+- Mercury: persönlicher Arbeitsplatz und Gateway (Cloud-VM), hier läuft Claude Code
+- Oracle: kleine Allzweck-Compute-Node
+- Hetzner: Box für autonome Hintergrund-Agenten
+- Archimedes: USV für Marvin, kein SSH
+- kali: Tailscale-Peer, nur bei Bedarf online
 
-## Outpost-Wrapper (Custom-Ports!)
+## Wie der Zugriff funktioniert
 
-Marvin und Minsky sind **nicht** auf Standard-Port 22 erreichbar — sie hängen hinter **Outpost-Wrapper-Hosts** mit eigenen Ports:
+- **Immer `ssh <alias>`**, nie die IP. Die Aliase stehen in `~/.ssh/config`, die gemeinsame Host-Datei `~/.ssh/tresor-hosts.conf` wird dort per `Include` eingebunden. Jeder Host nennt nur die Public-Key-Datei (`~/.ssh/tresor/<name>.pub`) plus `IdentitiesOnly yes`; den privaten Schlüssel liefert der Agent.
+- **Der Agent** ist ein eigener Socket unter `/run/user/<uid>/bws-ssh-agent.socket`, gestartet von den User-Units `ssh-agent-bws.service` und `bws-ssh-load.service` (der Loader lädt alle Schlüssel aus dem Tresor-Projekt). Neue Secrets im Tresor erscheinen erst nach `systemctl --user restart bws-ssh-load.service`.
+- **Notroute zu Marvin:** `ssh marvin-notfall` nutzt einen klassischen Datei-Schlüssel ohne Agent, unabhängig von Bitwarden. Nur verwenden, wenn der Tresor oder Agent nicht funktioniert.
+- **Outpost-Aliase (`outpost`, `outpost-marvin`) sind Container, nicht die Hosts.** Sie hängen an eigenen Ports (steht in der Config). Marvin und Minsky selbst erreicht man über `marvin` und `minsky`.
+- Marvin selbst behält seine eigenen Schlüsseldateien und einen Keychain-Agenten als Rückfallebene.
 
-| SSH-Alias | Ziel | Port | User |
-|---|---|---|---|
-| `outpost-marvin` | Marvin | **33222** | hanno |
-| `outpost` | Minsky | **32226** | hanno |
-| `oracle` | Oracle | 22 | hanno |
+Details zu Schlüsselliste, Geräten und Tokens: Obsidian-Notiz „SSH-Key-Inventar“. Neuaufbau eines Geräts: Repo `Mercury-Backup-Configs`, README, Abschnitt „SSH-Keys aus dem Tresor“.
 
-Die Hosts liegen im privaten Tailscale-100.x.x.x-Range; die konkreten IPs stehen nur in `~/.ssh/config` auf dem AI-Node, nicht hier (öffentliches Repo). Die Aliase stehen dort ebenfalls. **Immer `ssh <alias>` benutzen, nicht die IP direkt** — sonst landet man auf einem geschlossenen Port und wähnt sich fälschlich „ausgesperrt".
+## Geräte, die aus sind
 
-## Vor jedem Test: Config lesen, dann entscheiden
+Minsky, Desktop, Merlin, Bonfire und die Pis laufen meist nicht. Sie lassen sich per Wake-on-LAN oder dem Schalter in Home Assistant wecken. Minsky braucht etwa vier bis fünf Minuten bis SSH antwortet, der Outpost-Container darauf noch ein bis zwei Minuten länger, auch wenn der Tailscale-Ping schon durchgeht. Nach der Arbeit wieder ausschalten (Minsky verbraucht viel Strom).
 
-Bevor „kein SSH-Zugriff" gemeldet wird:
-1. `cat ~/.ssh/config` — gibt es Aliase mit Custom-Ports?
-2. `tailscale status` — ist der Zielhost überhaupt online?
-3. Erst dann mit `ssh -v <alias>` testen
+## Vor „kein SSH-Zugriff“: in dieser Reihenfolge prüfen
 
-**Anti-Pitfall:** Wer direkt auf `host 22` der Tailscale-IP pingt/ssht und nichts zurückkommt, schließt fälschlich auf „Firewall blockt" — dabei läuft SSH auf einem **Outpost-Port**. Hanno hat das am 30.08.2026 einmal korrigieren müssen.
+1. `ssh -v <alias>` mit dem **Alias**: zeigt, welcher Port und welcher Schlüssel tatsächlich benutzt werden.
+2. `tailscale status`: ist der Zielhost online?
+3. Der Agent: existiert der Socket (`ls /run/user/$(id -u)/bws-ssh-agent.socket`), zeigt `ssh-add -l` die Schlüssel, laufen die beiden User-Units?
+4. Ein **TCP-Timeout** statt „connection refused“ weist auf eine fehlende Tailscale-ACL hin (typisch bei neuen Geräten außerhalb des Heimnetzes), nicht auf einen fehlenden Schlüssel.
+5. Erst wenn alles davon ohne Ergebnis bleibt: Firewall oder Netzwerk vermuten.
 
-**Anti-Pitfall (Wiederholung am 01.09.2026):** Der erste Reflex beim „kein SSH-Zugriff"-Verdacht ist `~/.ssh/known_hosts` oder `~/.ssh/authorized_keys` zu prüfen. Beide sind **irrelevant** für die Frage „warum komme ich nicht auf den Wrapper-Host". Die einzig maßgebliche Datei ist `~/.ssh/config` — dort stehen die Aliasse mit ihren Custom-Ports, und **ohne sie** landet man auf Standard-Port 22, der auf Outpost-Wrappern geschlossen ist. Reihenfolge beim SSH-Probing strikt:
-
-1. `cat ~/.ssh/config` — Aliasse mit Ports lesen (1 Sekunde, löst die Frage meistens sofort)
-2. `tailscale status` — ist der Zielhost online?
-3. `ssh -v <alias>` mit dem Alias-Namen (nicht der IP!) — verbose-Output zeigt, welcher Port tatsächlich angesprochen wird
-4. **Erst dann**, wenn alle drei Punkte ohne Ergebnis bleiben: Firewall/Netzwerk prädikatisieren
-
-Wer Schritt 1 überspringt, brennt 5–10 Minuten Debug-Zeit für nichts — ist im konkreten Fall zweimal hintereinander passiert (30.08. und 01.09.2026).
-
-## Empfehlungen
-
-- SSH-CA als zentrale Identität statt manuell verteilte authorized_keys
-- ProxyJump auf dem neuen Gateway als Default-Einstiegspunkt
-- AuthorizedKeysCommand auf Marvin als Mittelweg, falls CA zu invasiv ist
-- SSH-CA-Konzept in `Obsidian/Ressourcen/SSH-CA-Konzept.md` (in Arbeit; bei Anlage dorthin statt ins aufgelöste `Referenz/`)
+**Anti-Pitfalls:**
+- Wer die IP direkt benutzt, umgeht die Config und landet auf Standard-Port 22 mit dem falschen Schlüssel oder, bei Outposts, auf einem geschlossenen Port. Daraus nicht auf „Firewall blockt“ schließen.
+- `known_hosts` und `authorized_keys` sind für die Frage „warum komme ich nicht auf den Host“ meist irrelevant. Zuerst die Config lesen.
+- Private Schlüssel nie ausgeben oder in Logs und Chats stehen lassen. Beim Tresor-Werkzeug `bws` Werte immer mit `--` bzw. `--value=` übergeben: Ein Syntaxfehler gibt sonst den Schlüssel in der Fehlermeldung aus.
 
 ## Merksätze
 
-- Niemals AI-Node direkt SSH in Heimnetz
-- Keys auf Gateway zentralisieren, nicht auf jedem Host
-- Bei Tests: Tailscale-Status prüfen, dann Marvin, dann Zielhost
+- Direkt per Tailscale, kein Hop über Marvin.
+- Alias statt IP, Config vor Vermutung.
+- Die Notroute nur bei defektem Tresor.
+- Schlüssel liegen im Tresor, nicht auf den Geräten verteilt.
 
 ## Zugriffsweg (agentenabhängig)
 
-- Claude Code (Bash-Sitzungen): hat SSH-Zugriff, diese Regeln gelten direkt.
-- claude.ai Web: kein Bash, kein SSH — dieser Skill ist dort nicht ausführbar. Bei SSH-Bedarf aus Web-Sitzungen an Claude Code oder Hermes verweisen.
-- Hermes: hat Shell-Zugriff, diese Regeln gelten direkt.
+- Claude Code (Bash-Sitzungen): Mercury, Laptop und Desktop haben den Tresor-Agenten. Die Regeln oben gelten direkt.
+- claude.ai Web: kein Bash, kein SSH. Bei SSH-Bedarf an Claude Code verweisen.
+- Hermes-Agenten: laut Server-Doku mit eingeschränkter eigener `~/.ssh/config` (nur Outpost-Container und Oracle), ohne den Tresor und ohne Zugriff auf Marvin selbst. Die Aliase und Wege dort kommen aus der Konfiguration des jeweiligen Agenten.

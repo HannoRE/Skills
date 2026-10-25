@@ -25,15 +25,18 @@ Drei Klones hängen an diesem Repo (Marvin nativ, Hetzner sekundär, Claude via 
 
 - `tagebuch-hanno` – Tagebuch-Workflow
 - `obsidian-vault-pflege` – Obsidian-Vault-Konventionen
-- `ssh-gateway` – SSH-Zugangslogik
+- `ssh-gateway` – SSH-Zugriff direkt per Tailscale mit Tresor-Keys
 - `mail-umgang` – Mail-Antwortmuster
 - `litellm-admin` – LiteLLM-Verwaltung: Team-Aliasse, Model-Rename-Fallen, Direct-API-Workarounds
+- `nextcloud-aufgaben` – Reminder- vs. Tasks-Liste, Formatkonventionen
+- `standort-handys` – Hannos Standort über Home Assistant, Mehrstandort-Entity-Präfixe
+- `skill-pflege` – dieses Repo sicher pflegen (Redaktions-Check, Sync, Versionsbump)
 
 ## Verwendung
 
 Hermes: `skill_view(name='...')` aus `~/./skills/`.
-Claude Code: `~/.claude/skills/` als Symlink auf dieses Repo.
+Claude Code: über den Marketplace-Eintrag `hanno-skills` (Plugin `hanno-skills`); Änderungen kommen nur bei, wenn die `version` in `.claude-plugin/marketplace.json` hochgezählt wird.
 
 ## Sync
 
-Hanno klont das Repo und legt einen Symlink nach `~/./skills/` für Hermes und nach `~/.claude/skills/` für Claude Code. Bei Änderungen `git pull` im Repo.
+Der Mycroft-Agent liest einen Klon auf Marvin (Timer, alle 20 Minuten `git pull`); Claude Code und claude.ai holen sich das Repo über den Marketplace. Details: `skill-pflege/SKILL.md`.

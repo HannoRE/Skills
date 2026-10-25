@@ -92,5 +92,6 @@ Wenn Hanno den Eintrag manuell repariert hat (er hat das z.B. am 26.08.2026 mit 
 
 ## Zugriffsweg (agentenabhängig)
 
-- Claude: Nextcloud-Notes-Kategorie „Tagebuch", Notiztitel = Jahr (z. B. „2026"). Allgemeine Zuordnung siehe `obsidian-vault-pflege`.
+- Claude (claude.ai Web): Nextcloud-Notes-Kategorie „Tagebuch", Notiztitel = Jahr (z. B. „2026"). Allgemeine Zuordnung siehe `obsidian-vault-pflege`.
+- Claude Code auf Mercury, Laptop und Desktop: wie Hermes direkt auf `~/Dropbox/Zuhause/Obsidian/Tagebuch/<jahr>.md`; Hinweise zum Dropbox-Mount stehen in `obsidian-vault-pflege`.
 - Hermes: `~/Dropbox/Zuhause/Obsidian/Tagebuch/<jahr>.md` direkt.

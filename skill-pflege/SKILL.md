@@ -83,14 +83,14 @@ git gc --prune=now --aggressive
 Das Repo liegt in drei Checkouts (Marvin nativ, Hetzner sekundär, Claude via Marketplace). **Alle drei müssen nach Force-Push nachgezogen werden**, sonst hat einer den alten Stand mit Secrets. Workflow:
 
 1. **Push erzwingen** auf `origin/main` (Marvin → GitHub).
-2. **Marvin-Container** (`/opt/stacks/hermes/skills-repo`): `git pull --ff-only` ODER warten bis zur nächsten Sync-Tick (20 min).
+2. **Marvin-Checkout** (`/opt/stacks/mycroft/skills-repo`): `git pull --ff-only` ODER warten bis zur nächsten Sync-Tick (20 min).
 3. **Hetzner-AI-Node** (`/home/hermes/repos/Hanno/Skills`): `git pull --ff-only`.
 4. **Claude via Marketplace**: `/plugin marketplace update` (Claude Code) bzw. Web-Re-Sync.
 5. **Verifizieren** — auf jedem Checkout ein `git log -p --grep "secret\|token"` bzw. `git grep <verdächtiger_wert>` und sicherstellen, dass nichts Altes mehr da ist.
 
 **Schnelltest über alle drei Klones in einem Rutsch:**
 ```bash
-for path in /opt/stacks/hermes/skills-repo /home/hermes/repos/Hanno/Skills /home/shared/Skills; do
+for path in /opt/stacks/mycroft/skills-repo /home/hermes/repos/Hanno/Skills ~/.claude/plugins/marketplaces/hanno-skills; do
   if [ -d "$path" ]; then
     echo "=== $path ==="
     cd "$path"
@@ -120,14 +120,14 @@ Nach einer Versionsänderung in claude.ai unter Customize → Plugins → Market
 
 ## Wie es bei Hermes ankommt
 
-**Wichtig — Namensverwirrung:** Es gibt zwei verschiedene Dinge, die "Hermes" heißen. Die kanonische Instanz ist der `nousresearch/hermes-agent`-Container im Docker-Stack `hermes` auf **Marvin** (`/opt/stacks/hermes/`). Der arbeitet aber (`terminal.backend: ssh`) auf einer separaten Maschine, dem Server mit SSH-Alias `hetzner` (User `hermes` dort) — das ist nur die Werkbank, nicht der native Skill-Speicher. Beide sind involviert, aus unterschiedlichen Gründen:
+**Wichtig — Namensverwirrung:** Es gibt mehrere Dinge, die „Hermes“ heißen. Die Agenten laufen als `nousresearch/hermes-agent`-Container in eigenen Docker-Stacks auf **Marvin** (zuletzt geprüft 2026-10-25: Mycroft, Petrus und Hedwig; den früheren Stack `hermes` unter `/opt/stacks/hermes/` gibt es nicht mehr). Der Alias `hermes` in der SSH-Config ist eine eigene Cloud-VM und nicht der Agent. Der Skill-Speicher und die Werkbank sind getrennte Orte:
 
-- **Marvin (`/opt/stacks/hermes/skills-repo`)** — Git-Checkout, per Docker-Volume in den Container gemountet (`/opt/data/external-skills/hanno-skills`), eingetragen in `config.yaml` unter `skills.external_dirs`. **Das ist der native Weg**: Hermes' eigene Tools (`skill_view`, `skill_manage`, `hermes skills list`) lesen/schreiben hier direkt. Bei Namensgleichheit mit einem selbst angelegten Skill in `~/.hermes/skills/` (nativer Bereich) gewinnt laut Hermes-Doku der native — deshalb dürfen für diese fünf Skills dort keine gleichnamigen Duplikate existieren (Stand 2026-08-16: bereinigt).
-- **Hetzner (`/home/hermes/repos/Hanno/Skills`)** — separater Checkout, erreichbar über Hermes' `terminal`-Tool (SSH-Backend). Nützlich für manuelle/Shell-Inspektion, aber **nicht** die Quelle für `skill_view`/`skill_manage`. Kein automatischer Sync (siehe unten) — Hermes pullt hier bei Bedarf manuell.
+- **Marvin (`/opt/stacks/mycroft/skills-repo`)** — Git-Checkout, per Docker-Volume in den **Mycroft**-Container gemountet (`/opt/data/external-skills/hanno-skills`), eingetragen in dessen `config.yaml` unter `skills.external_dirs`. **Das ist der native Weg**: Hermes' eigene Tools (`skill_view`, `skill_manage`, `hermes skills list`) lesen und schreiben hier direkt. Petrus hat keinen externen Skill-Ordner, Hedwig einen eigenen mit anderen Skills (Muggeltechnik), beide sehen die Skills aus diesem Repo also nicht. Bei Namensgleichheit mit einem selbst angelegten Skill in `~/.hermes/skills/` (nativer Bereich) gewinnt laut Hermes-Doku der native — deshalb dürfen für alle Skills dieses Repos dort keine gleichnamigen Duplikate existieren.
+- **Hetzner (`/home/hermes/repos/Hanno/Skills`)** — separater Checkout, erreichbar über das `terminal`-Tool (SSH-Backend). Nützlich für Shell-Inspektion, aber **nicht** die Quelle für `skill_view`/`skill_manage`. Kein automatischer Sync (siehe unten). Stand 2026-10-25 veraltet: enthält noch den alten Skill `obsidian-pflege` und es fehlen mehrere neuere Skills; vor jeder Nutzung `git pull --ff-only`.
 
 Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (beschränkt auf `HannoRE/Skills`, Contents Read & Write).
 
-**Sync-Strategie (Stand 2026-08-16):**
+**Sync-Strategie (Marvin-Timer am 2026-10-25 bestätigt):**
 
 - **Marvin (nativer Pfad, muss aktuell sein):** systemd-User-Timer `hanno-skills-sync.{service,timer}` pullt alle 20 Minuten automatisch (Lingering aktiv, überlebt Reboots). Wenn Hermes hier nativ einen Skill ändert, direkt danach `git pull --ff-only && git push` — nicht auf den nächsten Timer-Lauf warten.
 - **Hetzner (sekundär, nur bei Bedarf genutzt):** kein Timer mehr (entfernt am 2026-08-16 — zu teuer für einen selten genutzten Pfad). Vor jeder Nutzung dort erst `git pull --ff-only`, nach jeder Änderung `git push`.
@@ -135,9 +135,7 @@ Beide Checkouts haben Push-Zugriff über denselben Fine-grained GitHub-Token (be
 
 **Beschreibungslänge:** Hermes' natives `skill_manage`-Tool validiert `description` auf ≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt (System-Prompt-Budget). Alle Skills hier halten sich daran, damit Hermes sie nativ bearbeiten kann, ohne auf die Validierung zu laufen.
 
-**Bekannte Falle — `skill_manage` NICHT für diese fünf Skills nutzen (Stand 2026-08-16):** `skill_manage(action='delete', name=...)` meldet für diese externen Skills "success", löscht aber nichts — stattdessen können native Duplikate an zwei Orten neu entstehen: `/opt/data/skills/` im Marvin-Container UND `/home/hermes/.hermes/skills/` auf Hetzner (Zwei-Wege-Sync zwischen beiden, siehe `tools.environments.file_sync` in den Hermes-Logs). Mehrfach beobachtet: Löschung auf einer Seite hält nicht, wenn die andere Seite noch eine Kopie hat — beide Seiten müssen gleichzeitig bereinigt werden. Für die fünf Skills hier: Änderungen **ausschließlich** über direkte Datei-Edits im externen Pfad + `git push` vornehmen, nicht über `skill_manage create/delete/patch`. Falls `skill_manage` bei einem dieser Namen doch mal anspringt (z. B. weil ein Auto-Fix-Versuch reinrutscht), prüfen ob `/opt/data/skills/<name>` (Marvin) und `/home/hermes/.hermes/skills/<name>` (Hetzner) neu aufgetaucht sind, und beide löschen.
-
-**Erledigt (2026-08-16):** `config.yaml` auf Marvin hatte zusätzlich einen fehlerhaften Wert `terminal.cwd: /home/ubuntu` (SSH-User ist aber `hermes`, Home `/home/hermes`) — live als Fehler in den Logs sichtbar, mitgefixt auf `/home/hermes`.
+**Bekannte Falle — `skill_manage` NICHT für die Skills dieses Repos nutzen (beobachtet 2026-08-16, nicht erneut geprüft):** `skill_manage(action='delete', name=...)` meldet für diese externen Skills "success", löscht aber nichts — stattdessen können native Duplikate an zwei Orten neu entstehen: `/opt/data/skills/` im Agenten-Container auf Marvin UND `/home/hermes/.hermes/skills/` auf Hetzner (Zwei-Wege-Sync zwischen beiden, siehe `tools.environments.file_sync` in den Hermes-Logs). Mehrfach beobachtet: Löschung auf einer Seite hält nicht, wenn die andere Seite noch eine Kopie hat — beide Seiten müssen gleichzeitig bereinigt werden. Änderungen deshalb **ausschließlich** über direkte Datei-Edits im externen Pfad + `git push` vornehmen, nicht über `skill_manage create/delete/patch`. Falls `skill_manage` bei einem dieser Namen doch mal anspringt, prüfen ob `/opt/data/skills/<name>` (Agenten-Container) und `/home/hermes/.hermes/skills/<name>` (Hetzner) neu aufgetaucht sind, und beide löschen.
 
 ## Wie Claude selbst schreibend zugreift
 

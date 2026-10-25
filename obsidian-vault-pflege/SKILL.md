@@ -18,7 +18,9 @@ Daneben zwei weitere Top-Level-Ordner mit eigener Semantik: `Tagebuch/` (Chronol
 - Neue thematische Inhalte gehören in einen der PARA-Light-Ordner: `Persönlich/` für Konstanten und persönliche Sammlungen, `Projekte/` für laufende Vorhaben mit klarem Ziel, `Ressourcen/` für reines Nachschlagewerk ohne Lebensbezug. Top-Level-Verzeichnisse `Tagebuch/`, `Rezepte/` und `KI Workspace/` haben eigene Semantik (Chronologie, Kochrezepte bzw. Maschinen-Workspace) und bleiben reserviert.
 - Niemals Inhalte aus `Notizen.md` automatisch verschieben; Hanno entscheidet.
 - Brainstorming-Stände, Tagesdiskussionen oder Notizen, die den Stand eines Moments festhalten, gehören nicht in den Vault. Sie werden mit `YYMMDD <Begriff>.md` ins `Archiv/YYYY/` gelegt und nicht in Obsidian gepflegt. Begründung: nichts ewig Bestehendes, kein Tagebucheintrag, sondern eine Momentaufnahme, die archiviert wird. Beispiel: Vier App-Ideen für den Urlaub (Diskussion mit Papa, 20.08.2026) wurde als `Archiv/2026/260820 App Ideen für den Urlaub.md` abgelegt, nicht in `Obsidian/Projekte/`.
-- **Standorte** liegen in `Persönlich/Standorte.md` (seit 2026-09-01). NICHT als Sektion in eine bestehende IT-/Infrastruktur-Notiz einbetten — Standorte sind semantisch persönliche Konstanten, nicht IT-Thema. Verwandte IT-Sicht (Serverschrank-Inventar, HA-Flächen, Tailscale-IPs) bleibt separat in `Ressourcen/Server/Netzwerk & Hardware – Physische Infrastruktur.md` und referenziert `Persönlich/Standorte.md`.
+- **Doku bleibt langlebig, Logs gehören ins Archiv.** Eine Obsidian-Notiz beschreibt, wie etwas **jetzt** ist und warum, nicht wie es dazu kam. Datierte Nachträge, Debugging-Chroniken, Vorfallprotokolle, einmalige Prüfungen und abgehakte Aufgaben kommen als `YYMMDD <Begriff>.md` nach `Dropbox/Archiv/YYYY/`. Was daraus dauerhaft gilt (Festlegungen, Stolpersteine, Rezepte), wird thematisch in die Doku geschrieben. Die Notiz verlinkt das Archiv, und das Archiv darf die Notiz verlinken; der Verweis auf eine Archivdatei ist ein Klartext-Pfad, kein Wikilink. Wächst eine Notiz zu einem Logbuch, die ganze alte Fassung unverändert ins Archiv kopieren, dann die Notiz thematisch neu schreiben (so geht nichts verloren). Beispiele: `Archiv/2026/261025 Server-Infrastruktur Logbuch.md`, `Archiv/2026/261025 PHP2Shell Prüfung.md`.
+- **Kein `&` in Dateinamen, Titeln, Überschriften und Verweisen, stattdessen „und“.** Über die Nextcloud-Notes-API landet ein `&` im Titel vermutlich als `&amp;` im Dateinamen; Wikilinks mit `&` zeigen dann ins Leere. Ausnahmen sind nur Eigennamen und Shell-Code.
+- **Standorte** liegen in `Persönlich/Standorte.md` (seit 2026-09-01). NICHT als Sektion in eine bestehende IT-/Infrastruktur-Notiz einbetten — Standorte sind semantisch persönliche Konstanten, nicht IT-Thema. Verwandte IT-Sicht (Serverschrank-Inventar, HA-Flächen, Tailscale-IPs) bleibt separat in `Ressourcen/Server/Netzwerk und Hardware – Physische Infrastruktur.md` und referenziert `Persönlich/Standorte.md`.
 
 ## Stil
 
@@ -77,8 +79,16 @@ Bewährte Reihenfolge — in der Praxis am 2026-09-01 durchgespielt:
 
 Claude und Hermes arbeiten auf denselben Dateien, nur über unterschiedliche Schnittstellen:
 
-- Claude: über die Nextcloud-Notes-Tools (`nc_notes_*`), die intern per WebDAV schreiben (siehe Pitfall oben). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
+- Claude (claude.ai Web, ohne Dateisystem): über die Nextcloud-Notes-Tools (`nc_notes_*`), die intern per WebDAV schreiben (siehe Pitfall oben). Die Nextcloud-Kategorie entspricht dem Obsidian-Ordner, der Notiztitel entspricht dem Dateinamen ohne `.md` (Beispiel: Kategorie „Tagebuch", Notiz „2026" = `Tagebuch/2026.md`).
+- Claude Code auf Mercury, Laptop und Desktop: direkter Dateizugriff auf `~/Dropbox/Zuhause/Obsidian/...`, wie Hermes. Auf Mercury ist das ein rclone-FUSE-Mount; der Schritt „Cloud-Sync triggern“ entfällt dort, die Dateien erscheinen selbständig in der Cloud.
 - Hermes: direkter Dateizugriff auf den Obsidian-Vault-Pfad (`~/Dropbox/Zuhause/Obsidian/...`).
+
+### Pitfall — Dropbox-Mount: Zeitstempel und I/O-Fehler (beobachtet 2026-10-25)
+
+Auf dem FUSE-Mount verändert Dropbox die Änderungszeit einer Datei auch ohne inhaltliche Änderung. Zwei Folgen:
+
+- Das Schreib-Werkzeug von Claude Code meldet „file modified since read“, obwohl sich der Inhalt nicht geändert hat. Vergleichen (Größe, `cmp` gegen eine Kopie), die Datei kurz neu einlesen und erneut schreiben.
+- `sed -i` und ähnliche Werkzeuge, die eine temporäre Datei anlegen und umbenennen, können mit `Input/output error` abbrechen, obwohl die Änderung angekommen ist. Danach immer Größe und Inhalt prüfen, nicht blind wiederholen. Für Umbenennungen `os.rename` verwenden (siehe Migrations-Workflow, Schritt 4), für Inhaltsänderungen das Edit-Werkzeug oder ein Python-Skript, das die Datei einmal komplett schreibt.
 
 ### Pfad-Update nach Host-Wechsel (Sep 2026)
 
