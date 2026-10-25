@@ -62,13 +62,32 @@ Konkrete Werte sind tabu — **unabhängig davon, ob der Skill lokal oder für D
 **Verifiziert 2026-09-01 (zweiter Vorfall):** Nach dem GitGuardian-Alert wurde die Datei gesäubert + gefiltert. Trotzdem hätte der Workflow früher ansetzen können. Standard vor jedem Commit:
 
 ```bash
-cd /home/hermes/repos/Hanno/Skills
+cd <eigener-Repo-Klon>
 git add -A
 git diff --cached | grep -E "^[+]" | grep -iE "secret|token|key|password|credential|client[_-]?id|client[_-]?secret|access_token|refresh_token|api[_-]?key|private[_-]?key|sl\.|ghp_|sk-|xox[bpoas]-|-----BEGIN"
 echo "(sollte LEER sein; jeder Treffer = prüfen, ob Wert oder nur Konzept-Wort)"
 ```
 
 **Bei Treffer:** nicht committen. Erst entweder Wert ersetzen (siehe Negativ-Liste) oder, falls nur ein Konzept-Wort gemeint war, Zeile umformulieren.
+
+### Pitfall — Frontmatter-Check vor jedem Commit
+
+**Verifiziert 2026-10-25:** Zwei Skills hatten ein ungültiges Frontmatter und zwei weitere eine zu lange `description`, ohne dass es jemand gemerkt hat. Ein unquotiertes „: “ in der Beschreibung (z. B. `description: Titel: Untertitel.`) ist kein gültiges YAML; Beschreibungen über 60 Zeichen lehnt Hermes' `skill_manage` ab. Vor jedem Commit alle Skills prüfen:
+
+```bash
+python3 - <<'EOF'
+import glob, re, yaml
+for f in sorted(glob.glob("*/SKILL.md")):
+    fm = re.match(r"---\n(.*?)\n---\n", open(f, encoding="utf-8").read(), re.S).group(1)
+    d = yaml.safe_load(fm)   # wirft bei ungültigem YAML
+    n = len(d["description"])
+    ok = n <= 60 and d["description"].endswith(".")
+    print(f"{f:34} {n:3} Zeichen {'ok' if ok else '<-- PRÜFEN'}")
+EOF
+python3 -c "import json; print(json.load(open('.claude-plugin/marketplace.json'))['plugins'][0]['version'])"
+```
+
+Jede Ausgabezeile muss `ok` zeigen. Enthält eine Beschreibung ein „: “, gehört sie in Anführungszeichen. Die letzte Zeile gibt die Manifest-Version aus; sie muss höher sein als die zuletzt veröffentlichte (`git show origin/main:.claude-plugin/marketplace.json`).
 
 **Plus — History-Check nach jedem Filter-Branch / Force-Push:**
 ```bash
@@ -100,13 +119,16 @@ for path in /opt/stacks/mycroft/skills-repo /home/hermes/repos/Hanno/Skills ~/.c
 done
 ```
 
-## Neuen Skill anlegen
+## Skill anlegen oder ändern
+
+**Arbeitsort:** Immer in einem eigenen Klon arbeiten (z. B. im Scratchpad oder einem Arbeitsverzeichnis), **nie** im Marketplace-Verzeichnis unter `~/.claude/plugins/marketplaces/`. `claude plugin marketplace update hanno-skills` ersetzt diesen Klon komplett („Replacing the existing marketplace clone…“), lokale Änderungen dort gehen verloren oder blockieren das Update. Der Push läuft über einen eingeloggten `gh`-Account (HTTPS).
 
 1. Neues Verzeichnis `<skill-name>/` mit `SKILL.md` (YAML-Frontmatter: `name`, `description` — **≤60 Zeichen, ein Satz, Trigger zuerst, endet mit Punkt**, siehe Begründung unten bei "Wie es bei Hermes ankommt"; Body: kurze vollständige Sätze).
 2. Falls der Skill für Claude und Hermes unterschiedliche Werkzeuge/Pfade braucht (z. B. Claude nutzt einen Connector, Hermes einen direkten Dateizugriff), einen Abschnitt `## Zugriffsweg (agentenabhängig)` ergänzen — siehe `tagebuch-hanno` und `obsidian-vault-pflege` als Vorlage.
-3. Redaktions-Check (oben) durchführen.
-4. **`.claude-plugin/marketplace.json` mit anpassen:** `version` hochzählen (z. B. Patch-Version +1) und die `description` um den neuen Skill-Namen ergänzen (bzw. beim Entfernen eines Skills herausnehmen). Das ist **nicht optional** und gilt für jeden neuen/entfernten Skill-Ordner, nicht nur für strukturelle Änderungen — siehe Begründung unten bei „Wie es bei Claude ankommt".
-5. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen.
+3. Redaktions-Check (oben) und Pre-Commit-Gate durchführen, dazu den Frontmatter-Check.
+4. **`.claude-plugin/marketplace.json` mit anpassen:** `version` hochzählen (Patch-Version +1) und beim Anlegen oder Entfernen eines Skills die `description` um dessen Namen ergänzen bzw. kürzen. Das ist **nicht optional und gilt für jeden Commit, der Skill-Inhalt ändert**, auch für reine Textänderungen an einem bestehenden Skill: Claude Code und claude.ai erkennen Änderungen nur an der Versionsnummer — siehe Begründung unten bei „Wie es bei Claude ankommt".
+5. Commit + Push. Vorher `git pull --ff-only`, um nicht gegen zwischenzeitliche Änderungen der anderen Seite zu laufen; falls das fehlschlägt, erst mergen/rebasen, dann pushen. Bei größeren Änderungen vorher Hanno den Diff zeigen (das Repo ist öffentlich).
+6. **Nach dem Push prüfen, dass es ankommt:** `git show origin/main:.claude-plugin/marketplace.json` zeigt die neue Version; auf Marvin `systemctl --user start hanno-skills-sync.service` (statt 20 Minuten zu warten) und im Klon `git log -1` prüfen; auf der eigenen Maschine `claude plugin marketplace update hanno-skills` und `git log -1` im Marketplace-Klon; in claude.ai „Check for updates“ (siehe unten). Der Hetzner-Checkout hat keinen Timer und bleibt veraltet, bis dort jemand `git pull` macht.
 
 **Patch-Tool-Falle bei deutscher Markdown:** Wenn du einen Skill (oder eine andere deutsche Markdown-Datei) per `patch` mit `old_string`/`new_string` editierst, müssen die deutschen Anführungszeichen (`„"`, U+201E/U+201C) im `old_string` **Byte für Byte** mit der Datei übereinstimmen. ASCII `"` matched nicht, auch wenn es „gleich aussieht". Bei Fehlschlag (`Could not find a match for old_string`): die Originalstelle mit `read_file` neu laden, das Unicode-Zeichen 1:1 aus der Datei kopieren, nicht aus dem Gedächtnis. Diese Falle gilt für jeden Skill, der deutsche Texte enthält, nicht nur für Tagebucheinträge.
 
@@ -116,7 +138,7 @@ done
 
 **Verifiziert 2026-10-15:** Das Manifest stand seit dem Erstellungs-Commit (2026-08-16, `version: "1.0.0"`) unverändert, obwohl danach vier weitere Skills dazukamen (`litellm-admin`, `nextcloud-aufgaben`, `skill-pflege`, `standort-handys`). Weder Claude Code noch claude.ai haben in der Zwischenzeit je etwas Neues gesehen — nicht, weil der Sync kaputt war, sondern weil es für keinen der beiden Mechanismen ein Änderungssignal gab.
 
-Nach einer Versionsänderung in claude.ai unter Customize → Plugins → Marketplace → „Check for updates" manuell anstoßen, falls es nicht zeitnah von selbst passiert (kein dokumentiertes festes Intervall, keine Erzwingung über die CLI möglich). Bei anhaltender Staleness trotz Versionsbump: Marketplace dort entfernen und neu hinzufügen (`Add → Add marketplace → Add from a repository`).
+Nach einer Versionsänderung in claude.ai unter Customize → Plugins → Marketplace → „Check for updates" manuell anstoßen, falls es nicht zeitnah von selbst passiert (kein dokumentiertes festes Intervall, keine Erzwingung über die CLI möglich). Für Claude Code selbst funktioniert dagegen `claude plugin marketplace update hanno-skills` sofort (verifiziert 2026-10-25, ersetzt den Klon komplett). Bei anhaltender Staleness trotz Versionsbump: Marketplace dort entfernen und neu hinzufügen (`Add → Add marketplace → Add from a repository`).
 
 ## Wie es bei Hermes ankommt
 
