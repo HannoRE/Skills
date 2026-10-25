@@ -1,6 +1,6 @@
 ---
 name: obsidian-vault-pflege
-description: Obsidian-Vault-Notizkonventionen einhalten: Struktur, Stil, sicheres Schreiben.
+description: "Obsidian-Vault pflegen: Struktur, Stil, sicheres Schreiben."
 ---
 
 # Obsidian – Vault-Pflege

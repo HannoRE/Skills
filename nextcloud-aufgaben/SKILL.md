@@ -1,6 +1,6 @@
 ---
 name: nextcloud-aufgaben
-description: Reminder-Liste vs. Tasks-Liste in Nextcloud unterscheiden, inklusive Formatkonventionen für beide.
+description: Reminder- vs. Tasks-Liste in Nextcloud unterscheiden.
 ---
 
 # Nextcloud – Aufgaben

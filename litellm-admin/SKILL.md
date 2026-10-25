@@ -1,6 +1,6 @@
 ---
 name: litellm-admin
-description: LiteLLM per API verwalten: Model-Rename- und Alias-Fallen.
+description: "LiteLLM per API verwalten: Model-Rename- und Alias-Fallen."
 ---
 
 # LiteLLM-Admin
