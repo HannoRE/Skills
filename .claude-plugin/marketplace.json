@@ -5,8 +5,8 @@
     {
       "name": "hanno-skills",
       "source": { "source": "github", "repo": "HannoRE/Skills" },
-      "description": "Persönliche Skills: Tagebuch, Obsidian-Vault-Pflege, SSH-Gateway, Mail-Umgang, Nextcloud-Aufgaben, LiteLLM-Admin, Skill-Pflege, Standort-Handys",
-      "version": "1.1.4",
+      "description": "Persönliche Skills: Tagebuch, Obsidian-Vault-Pflege, SSH-Gateway, Mail-Umgang, Nextcloud-Aufgaben, LiteLLM-Admin, Skill-Pflege, Standort-Handys, Studium-Übungsblatt",
+      "version": "1.1.5",
       "author": { "name": "HannoRE" },
       "strict": false,
       "skills": "."

@@ -31,6 +31,7 @@ Drei Klones hängen an diesem Repo (Marvin nativ, Hetzner sekundär, Claude via 
 - `nextcloud-aufgaben` – Reminder- vs. Tasks-Liste, Formatkonventionen
 - `standort-handys` – Hannos Standort über Home Assistant, Mehrstandort-Entity-Präfixe
 - `skill-pflege` – dieses Repo sicher pflegen (Redaktions-Check, Sync, Versionsbump)
+- `studium-uebungsblatt` – Ordner pro Übungsblatt, Hauptdatei, Moodle-Abgleich, Studium-Task
 
 ## Verwendung
 
