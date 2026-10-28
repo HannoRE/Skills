@@ -30,7 +30,7 @@ Zu Beginn eines Blatts und bei „Habe ich alles?“-Fragen:
 
 ## Abgabe in Nextcloud eintragen
 
-Jede Abgabe bekommt einen Task in der Nextcloud-Liste `Studium` (nicht `Tasks`).
+Jede Abgabe bekommt einen Task in der Nextcloud-Liste `Studium` (nicht `Tasks`). Der Task wird erst angelegt, wenn es die Abgabe wirklich gibt, also wenn das Blatt veröffentlicht ist und der Ordner dazu angelegt wird. Keine Tasks auf Vorrat für künftige Blätter.
 
 - `summary`: `<Fach> BlattN` (Vorbild: bestehende Einträge dort).
 - `due_date`: Abgabetermin, Zeitzone `Europe/Berlin`.
