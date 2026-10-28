@@ -25,8 +25,19 @@ Zu Beginn eines Blatts und bei „Habe ich alles?“-Fragen:
 
 1. `list_courses` und `get_course_overview` für den Kurs aufrufen.
 2. Die Dateien im Kursüberblick (Folien, Blätter, Projektunterlagen) mit dem lokalen Fachordner vergleichen. Videos bleiben außen vor.
-3. Fehlende Dateien mit `download_file` in den passenden Ordner laden, ohne bestehende zu überschreiben. Aufgabenblätter in den Blattordner, alles andere in den Fachordner.
+3. Fehlende Dateien holen, ohne bestehende zu überschreiben. Aufgabenblätter in den Blattordner, alles andere in den Fachordner (siehe „Dateien holen“).
 4. Auffälligkeiten aus dem Überblick (Fristen, Terminänderungen, Vorlesung nur als Aufzeichnung) in `Infos.md` festhalten.
+
+## Dateien holen
+
+Der Moodle-MCP läuft in einem eigenen Container auf Marvin, nicht auf dem Rechner der Sitzung. `download_file` schreibt deshalb in das Dateisystem dieses Containers; ein lokaler Zielpfad schlägt mit „directory does not exist“ fehl, selbst wenn er lokal existiert. Ablauf:
+
+1. `download_file` mit `save_to` unter `/tmp/` im Container aufrufen (Originalname beibehalten).
+2. Die Datei per SSH (Alias `marvin`, siehe `ssh-gateway`) aus dem Container ziehen: `ssh marvin 'docker exec <container> cat "/tmp/<Datei>"' > "<Ziel>"`. Den Containernamen findet man mit `docker ps | grep -i moodle`. Die SSH-Banner-Zeile geht auf stderr und landet nicht in der Datei.
+3. Größe und Typ prüfen (`ls -l`, `file`) und die Temp-Datei im Container löschen.
+4. Große Datensätze, die nicht ins Git sollen (z. B. XML-Korpora), nach `data/` legen und bei Bedarf zusätzlich auf den Rechenserver kopieren.
+
+Immer die Originaldatei ablegen. Keine Markdown-Abschriften von Aufgabenblättern anlegen; `fetch_file` ist nur zum Lesen da.
 
 ## Abgabe in Nextcloud eintragen
 
