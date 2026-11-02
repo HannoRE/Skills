@@ -9,7 +9,7 @@ Jedes Fach hat einen eigenen Ordner (`Studium/<Semester>/<Fach>/`). Darin liegen
 
 ## Ordnerkonvention
 
-- Pro Blatt ein Ordner `Blatt NN/` (zweistellig, z. B. `Blatt 01`).
+- Pro Blatt ein Ordner. Die Schreibweise (`Blatt1` oder `Blatt 01`) steht in der `CLAUDE.md` des Fachs und wird dort übernommen; gibt es keine Vorgabe, gilt `Blatt1` wie in den Code-Fächern.
 - Hinein kommen das Aufgabenblatt (PDF aus Moodle, Originalname) und alles, was zur Lösung gehört.
 - Die **Hauptdatei** heißt `BlattN.md`, `BlattN.pdf` oder `BlattN.py` (ohne führende Null, je nach Fach und Abgabeform). Nie `Lösung.md`.
 - Unterlagen wie ein KI-Chat-Protokoll, Interviewnotizen oder Skizzen liegen als eigene Dateien daneben und werden in der Hauptdatei verlinkt.
@@ -38,6 +38,16 @@ Der Moodle-MCP läuft in einem eigenen Container auf Marvin, nicht auf dem Rechn
 4. Große Datensätze, die nicht ins Git sollen (z. B. XML-Korpora), nach `data/` legen und bei Bedarf zusätzlich auf den Rechenserver kopieren.
 
 Immer die Originaldatei ablegen. Keine Markdown-Abschriften von Aufgabenblättern anlegen; `fetch_file` ist nur zum Lesen da.
+
+## Fächer mit Python-Code
+
+Gilt für Fächer, in denen Aufgaben mit Code gelöst werden (Repo pro Fach, Ausführung auf dem Rechenserver). Die genaue Arbeitsweise steht in der `CLAUDE.md` des Fachs und hat Vorrang; hier nur die gemeinsamen Grundsätze:
+
+- Git ist der einzige Transportweg zwischen dem lokalen Checkout (bearbeiten) und dem Checkout auf dem Rechenserver (ausführen). `results/` schreibt nur der Rechenserver. Kein Wrapper-Skript, keine Kopien per scp oder rsync.
+- Hauptdatei `blattN.py` ist ein normales Skript. Ob zusätzlich ein Notebook abgegeben wird, entscheidet das Fach. Wo keins verlangt wird, kein jupytext-Format, keine `# %%`-Zellen und kein Notebook-Build.
+- Texte der Abgabe (Begründungen, Zusammenfassungen, Reflexionen, Auswertungen) schreibt Hanno selbst. Claude liefert Struktur, Stichpunkte als HTML-Kommentar (vor der Abgabe löschen) und prüft Fakten und Wortzahl. Hypothesen werden vor dem Blick auf Ergebnisse formuliert.
+- Stil: keine Em- oder En-Dashes, kurze Überschriften (`## Aufgabe 1`), praktisch keine Kommentare im Code, einfache ASCII-Schreibweise im Code.
+- Quellen bei Aufgaben mit Medienbeitrag: Titel, Autor, Medium, Datum und Link verlangt, Alter oft begrenzt. Vor der Auswahl die Aufgabenstellung lesen, Primärquellen selbst öffnen und nur Gelesenes als gelesen angeben. Newsletter ohne Autor und öffentlichen Link taugen höchstens als Anstoß.
 
 ## Abgabe in Nextcloud eintragen
 
