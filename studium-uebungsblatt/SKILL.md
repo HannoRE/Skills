@@ -19,7 +19,16 @@ Jedes Fach hat einen eigenen Ordner (`Studium/<Semester>/<Fach>/`). Darin liegen
 
 ## Hauptdatei aufbauen
 
-Eine Überschrift pro Aufgabe, darunter eine Überschrift pro Teilaufgabe nach der Nummerierung des Blatts. Noch nicht bearbeitete Teile stehen mit `_TODO_` drin, damit der Stand auf einen Blick sichtbar ist. Kopf: Abgabetermin und Abgabeweg.
+Eine Überschrift pro Aufgabe, darunter eine Überschrift pro Teilaufgabe nach der Nummerierung des Blatts. Kein Kopf mit Abgabetermin oder Abgabeweg: Die Frist steht im Nextcloud-Task und in `Infos.md`. Der Stand wird kaum getrackt; `_TODO_` nur dort, wo es beim Weiterarbeiten wirklich hilft.
+
+## Format der Bearbeitung
+
+- **Standard:** Text in `.md`, Code in `.py`. Ist es nur wenig Text, kommt er als Kommentar in die `.py`.
+- Wird ein Jupyter Notebook verlangt, wird das Notebook aus `.py` bzw. `.md` konvertiert (z. B. mit jupytext) und nicht von Hand gepflegt.
+- Manchmal schreibt Hanno die Lösung per Hand direkt als PDF. Dann braucht es keine Hauptdatei; höchstens Hilfsrechnungen als `.py`.
+- Eine andere Ansage von Hanno oder die `CLAUDE.md` des Fachs hat Vorrang.
+- Alle Dateien in Hannos Stil (siehe „Fächer mit Python-Code“ und die `CLAUDE.md` des Fachs), nicht in Claudes Standardstil.
+- Stand und Notizen für sich selbst darf Claude in `Infos.md` festhalten, aber nur, wenn Claude sie wirklich pflegt. Hanno liest sie nicht.
 
 ## Moodle-Abgleich
 
