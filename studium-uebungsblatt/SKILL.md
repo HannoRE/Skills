@@ -7,7 +7,7 @@ description: Studium: Übungsblatt-Ordner, Hauptdatei und Moodle-Abgleich.
 
 Jedes Fach hat einen eigenen Ordner (`Studium/<Semester>/<Fach>/`). Darin liegen Vorlesungsmaterial und Infos direkt im Fachordner, jedes Übungsblatt bekommt einen eigenen Unterordner.
 
-**Die Sitzung läuft im Fachordner, und dort wird gearbeitet.** Blatt holen, Lösung schreiben und Stand festhalten passieren lokal im Blattordner (Hauptdatei mit `_TODO_`). Moodle (Holen) und Nextcloud (Frist) sind Zuarbeit und nie Voraussetzung: Antwortet eines davon nicht (`ConnectError`), wird trotzdem lokal weitergearbeitet, der Rest später nachgeholt. Nicht mehrfach wiederholen und keine Dienste auf Marvin untersuchen, solange Hanno nicht danach fragt.
+**Die Sitzung läuft im Fachordner, und dort wird gearbeitet.** Blatt lesen, Lösung schreiben und Stand festhalten passieren lokal im Blattordner (Hauptdatei mit `_TODO_`). Materialien legt Hanno bevorzugt selbst im Fachordner ab (gleiches Dateisystem, Dropbox); was dort liegt, wird lokal gelesen, ohne MCP-Server. Moodle (Abgleich, Fehlendes holen) und Nextcloud (Frist) sind Zuarbeit und nie Voraussetzung: Antwortet eines davon nicht (`ConnectError`), wird trotzdem lokal weitergearbeitet und der Rest später nachgeholt. Nicht mehrfach wiederholen und keine Dienste auf Marvin untersuchen, solange Hanno nicht danach fragt.
 
 ## Ordnerkonvention
 
@@ -57,7 +57,7 @@ Jede Abgabe bekommt einen Task in der Nextcloud-Liste `Studium` (nicht `Tasks`).
 
 - `summary`: `<Fach> BlattN` (Vorbild: bestehende Einträge dort).
 - `due_date`: Abgabetermin, Zeitzone `Europe/Berlin`.
-- `description`: Abgabeweg, Punkte, Ordner und Hauptdatei, kurz. Die Aufgabenliste mit Stand steht in der Hauptdatei (`_TODO_`), nicht im Task. Ein leerer Task mit Frist genügt.
+- `description`: leer lassen. Der Task ist nur die Erinnerung an die Abgabe und wird nicht gepflegt. Aufgaben, Stand und Abgabeweg stehen in der Hauptdatei und in `Infos.md`.
 - Kein `priority` setzen.
 
 ## Chats und Interviews als Abgabe
