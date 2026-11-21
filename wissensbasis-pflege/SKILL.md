@@ -1,6 +1,6 @@
 ---
 name: wissensbasis-pflege
-description: "Use whenever Hanno gives new knowledge about the church, Bunte Haus or Muggeltechnik in Miesbach (rooms, technology, recurring problems, routines, people, dates, things seen on site) or asks to add, fix or look it up, and when the Eingang of the Wissensbasis holds unprocessed notes. Works in Claude Code (file access) and in plain chat (via Gitea tools)."
+description: Use when Hanno Wissen zur Miesbach-Wissensbasis liefert.
 ---
 
 # Wissensbasis Kirche, Bunte Haus und Muggeltechnik pflegen

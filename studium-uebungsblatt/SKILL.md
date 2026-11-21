@@ -1,6 +1,6 @@
 ---
 name: studium-uebungsblatt
-description: Studium: Übungsblatt-Ordner, Hauptdatei und Moodle-Abgleich.
+description: "Studium: Übungsblatt-Ordner, Hauptdatei und Moodle-Abgleich."
 ---
 
 # Studium – Übungsblätter

@@ -29,9 +29,11 @@ Drei Klones hängen an diesem Repo (Marvin nativ, Hetzner sekundär, Claude via 
 - `mail-umgang` – Mail-Antwortmuster
 - `litellm-admin` – LiteLLM-Verwaltung: Team-Aliasse, Model-Rename-Fallen, Direct-API-Workarounds
 - `nextcloud-aufgaben` – Reminder- vs. Tasks-Liste, Formatkonventionen
+- `nextcloud-kalender` – Termine in den Kalender „Events": Quellen lesen, Reminder-Regel (Default 15), Abschluss-Gate
 - `standort-handys` – Hannos Standort über Home Assistant, Mehrstandort-Entity-Präfixe
 - `skill-pflege` – dieses Repo sicher pflegen (Redaktions-Check, Sync, Versionsbump)
 - `studium-uebungsblatt` – Ordner pro Übungsblatt, Hauptdatei, Moodle-Abgleich, Studium-Task
+- `wissensbasis-pflege` – Miesbach-Wissensbasis pflegen (Fakten, Eingang, Archiv)
 
 ## Verwendung
 
